@@ -1,0 +1,83 @@
+<div class="container mt-4">
+  <form [formGroup]="empresaForm" (ngSubmit)="onSubmit()" class="needs-validation">
+    
+    <div class="card bg-dark mb-4">
+      <div class="card-header">
+        <h3>Datos del Representante</h3>
+      </div>
+      <div class="card-body" formGroupName="representante">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="repNombre" class="form-label">Nombre</label>
+            <input id="repNombre" type="text" class="form-control" formControlName="nombre">
+          </div>
+          <div class="col-md-5 mb-3">
+            <label for="repApellidos" class="form-label">Apellidos</label>
+            <input id="repApellidos" type="text" class="form-control" formControlName="apellidos">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="repDni" class="form-label">DNI</label>
+            <input id="repDni" type="text" class="form-control" formControlName="dni">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-dark mb-4">
+      <div class="card-header">
+        <h3>Datos de la Empresa</h3>
+      </div>
+      <div class="card-body" formGroupName="empresa">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="empNombre" class="form-label">Nombre de la empresa</label>
+            <input id="empNombre" type="text" class="form-control" formControlName="nombre">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="empCif" class="form-label">CIF</label>
+            <input id="empCif" type="text" class="form-control" formControlName="cif">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="empProvincia" class="form-label">Provincia</label>
+            <input id="empProvincia" type="text" class="form-control" formControlName="provincia">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="empLocalidad" class="form-label">Localidad</label>
+            <input id="empLocalidad" type="text" class="form-control" formControlName="localidad">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="empCP" class="form-label">Código Postal</label>
+            <input id="empCP" type="text" class="form-control" formControlName="codigoPostal">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12 mb-3">
+            <label for="empCalle" class="form-label">Dirección</label>
+            <input id="empCalle" type="text" class="form-control" formControlName="calle">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="empTelefono" class="form-label">Teléfono</label>
+            <input id="empTelefono" type="tel" class="form-control" formControlName="telefono">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="empEmail" class="form-label">Email</label>
+            <input id="empEmail" type="email" class="form-control" formControlName="email">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-grid gap-2">
+      <button type="submit" class="btn btn-primary btn-lg" [disabled]="!empresaForm.valid">
+        Guardar Datos
+      </button>
+    </div>
+  </form>
+</div>
