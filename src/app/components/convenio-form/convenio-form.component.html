@@ -1,4 +1,5 @@
 <div class="container mt-4">
+  <h1 class="display-6 text-center mb-4">Generador Anexo X</h1>
   <form [formGroup]="empresaForm" (ngSubmit)="onSubmit()" class="needs-validation">
     
     <div class="card bg-dark mb-4">
@@ -9,15 +10,19 @@
         <div class="row">
           <div class="col-md-4 mb-3">
             <label for="repNombre" class="form-label">Nombre</label>
-            <input id="repNombre" type="text" class="form-control" formControlName="nombre">
+            <input id="repNombre" type="text" class="form-control" formControlName="nombre" />
           </div>
-          <div class="col-md-5 mb-3">
+          <div class="col-md-4 mb-3">
             <label for="repApellidos" class="form-label">Apellidos</label>
-            <input id="repApellidos" type="text" class="form-control" formControlName="apellidos">
+            <input id="repApellidos" type="text" class="form-control" formControlName="apellidos" />
           </div>
-          <div class="col-md-3 mb-3">
+          <div class="col-md-2 mb-3">
             <label for="repDni" class="form-label">DNI</label>
-            <input id="repDni" type="text" class="form-control" formControlName="dni">
+            <input id="repDni" type="text" class="form-control" formControlName="dni" />
+          </div>
+          <div class="col-md-2 mb-3">
+            <label for="repCargo" class="form-label">Cargo</label>
+            <input id="repCargo" type="text" class="form-control" formControlName="cargo" />
           </div>
         </div>
       </div>

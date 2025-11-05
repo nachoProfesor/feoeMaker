@@ -1,61 +1,63 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { lastValueFrom } from 'rxjs';
 import { saveAs } from 'file-saver';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class DocumentGeneratorService {
+  private readonly TEMPLATE_PATH = 'assets/template.docx';
+
   constructor(private http: HttpClient) { }
 
   async generateConvenio(formData: any) {
     try {
-      // 1. Cargar la plantilla desde assets
-      const templateResponse = await this.http
-        .get('assets/template.docx', { responseType: 'arraybuffer' })
-        .toPromise();
+      const response = await fetch('assets/AnexoXtemplate.docx');
+      const arrayBuffer = await response.arrayBuffer();
 
-      if (!templateResponse) {
-        throw new Error('No se pudo cargar la plantilla');
-      }
+      if (!arrayBuffer) throw new Error('No se pudo cargar la plantilla (arrayBuffer vacío)');
 
-      // 2. Crear un nuevo ZIP binario
-      const zip = new PizZip(templateResponse);
-      
-      // 3. Crear el templater
-      const doc = new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true
-      });
+      const buf = new Uint8Array(arrayBuffer);
 
-      // 4. Renderizar el template con los datos
+      // Debe empezar por 50 4B 03 04 (ZIP/DOCX). Si no, probablemente es index.html (404 fallback).
+      // const isZip = buf[0] === 0x50 && buf[1] === 0x4b && buf[2] === 0x03 && buf[3] === 0x04;
+      // if (!isZip) {
+      //   const preview = response.headers.get('Content-Type')?.startsWith('text/') ? (await response.text()).slice(0, 200) : '';
+      //   throw new Error(`La plantilla no es un DOCX válido. Content-Type: ${response.headers.get('Content-Type')}. Preview: ${preview}`);
+      // }
+
+      const zip = new PizZip(buf);
+      const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+
+      const now = new Date();
+      const mesNombre = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(now); // ej: "noviembre"
+
       doc.render({
-        REPRESENTANTE_NOMBRE: `${formData.representante.nombre} ${formData.representante.apellidos}`,
-        REPRESENTANTE_DNI: formData.representante.dni,
-        EMPRESA_NOMBRE: formData.empresa.nombre,
-        EMPRESA_CIF: formData.empresa.cif,
-        EMPRESA_DIRECCION: formData.empresa.calle,
-        EMPRESA_LOCALIDAD: formData.empresa.localidad,
-        EMPRESA_PROVINCIA: formData.empresa.provincia,
-        EMPRESA_CP: formData.empresa.codigoPostal,
-        EMPRESA_TELEFONO: formData.empresa.telefono,
-        EMPRESA_EMAIL: formData.empresa.email
+        REPRESENTANTE_NOMBRE: `${formData?.representante?.nombre || ''} ${formData?.representante?.apellidos || ''}`.trim(),
+        REPRESENTANTE_DNI: formData?.representante?.dni || '',
+        REPRESENTANTE_CARGO: formData?.representante?.cargo || 'administrador',
+        EMPRESA_NOMBRE: formData?.empresa?.nombre || '',
+        EMPRESA_CIF: formData?.empresa?.cif || '',
+        EMPRESA_DIRECCION: formData?.empresa?.calle || '',
+        EMPRESA_LOCALIDAD: formData?.empresa?.localidad || '',
+        EMPRESA_PROVINCIA: formData?.empresa?.provincia || '',
+        EMPRESA_CP: formData?.empresa?.codigoPostal || '',
+        EMPRESA_TELEFONO: formData?.empresa?.telefono || '',
+        EMPRESA_EMAIL: formData?.empresa?.email || '',
+        FECHA_DIA: now.getDate().toString(),
+        FECHA_MES_NOMBRE: mesNombre,
+        FECHA_ANIO: now.getFullYear().toString()
       });
 
-      // 5. Generar el documento
-      const blob = doc.getZip().generate({
+      const out = doc.getZip().generate({
         type: 'blob',
         mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
       });
-
-      // 6. Guardar el archivo
-      saveAs(blob, 'convenio.docx');
-
-    } catch (error) {
-      console.error('Error al generar el documento:', error);
-      throw error;
+      saveAs(out, `AnexoX_${formData?.empresa?.nombre || 'empresa'}.docx`);
+    } catch (e) {
+      console.error('Error generating document:', e);
+      throw e;
     }
   }
 }
