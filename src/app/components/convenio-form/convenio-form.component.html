@@ -79,6 +79,36 @@
       </div>
     </div>
 
+    <div class="card bg-dark mb-4">
+      <div class="card-header">
+        <h3>Datos de Formación</h3>
+      </div>
+      <div class="card-body" formGroupName="formacion">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="titulo" class="form-label">Título</label>
+            <select id="titulo" class="form-select" formControlName="tituloId">
+              <option value="">Seleccione un título...</option>
+              <option *ngFor="let titulo of titulos" [value]="titulo.id">
+                {{ titulo.nombre }}
+              </option>
+            </select>
+            <div *ngIf="loadingTitulos" class="text-muted mt-1">Cargando títulos...</div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="modulo" class="form-label">Módulo</label>
+            <select id="modulo" class="form-select" formControlName="moduloId" [disabled]="!modulos.length">
+              <option value="">Seleccione un módulo...</option>
+              <option *ngFor="let modulo of modulos" [value]="modulo.id">
+                {{ modulo.nombre }}
+              </option>
+            </select>
+            <div *ngIf="loadingModulos" class="text-muted mt-1">Cargando módulos...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="d-grid gap-2">
       <button type="submit" class="btn btn-primary btn-lg" [disabled]="!empresaForm.valid">
         Generar Anexo X (Formato .docx) 📖
