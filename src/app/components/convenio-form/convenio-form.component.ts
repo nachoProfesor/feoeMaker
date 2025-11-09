@@ -74,13 +74,16 @@ export class ConvenioFormComponent implements OnInit {
   loadTitulos() {
     this.loadingTitulos = true;
     this.titulos = [];
+    console.log('Cargando títulos para tipo:', this.tipoGrado);
     this.apiService.getTitulos(this.tipoGrado).subscribe({
       next: (titulos) => {
+        console.log('Títulos recibidos:', titulos);
         this.titulos = titulos;
         this.loadingTitulos = false;
       },
       error: (err) => {
         console.error('Error cargando títulos:', err);
+        console.error('URL:', `${this.tipoGrado}`);
         this.loadingTitulos = false;
       }
     });

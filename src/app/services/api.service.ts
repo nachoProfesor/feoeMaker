@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, map, catchError, throwError } from 'rxjs';
 
 export interface CE {
   descripcion: string;
@@ -72,12 +72,21 @@ export class ApiService {
 
   // Obtener títulos por tipo de grado
   getTitulos(tipoGrado: string = 'superior'): Observable<Titulo[]> {
-    return this.http.get<TitulosResponse>(`${this.API_URL}/titulos/${tipoGrado}`).pipe(
+    const url = `${this.API_URL}/titulos/${tipoGrado}`;
+    console.log('Llamando a API:', url);
+    return this.http.get<TitulosResponse>(url).pipe(
       map(response => {
+        console.log('Respuesta de API:', response);
         if (response.success && response.titulos) {
           return response.titulos.map(nombre => ({ nombre }));
         }
         return [];
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error HTTP:', error);
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+        return throwError(() => error);
       })
     );
   }
