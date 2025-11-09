@@ -192,27 +192,23 @@ export class AdministracionComponent implements OnInit {
       return;
     }
 
-    if (!this.nuevoCiclo.titulo_id || this.nuevoCiclo.titulo_id === '') {
+    if (!this.nuevoCiclo.titulo_id) {
       alert('Por favor selecciona un título para el ciclo');
       return;
     }
 
     this.guardandoCiclo = true;
 
-    // Asegurar que titulo_id sea un número válido
-    const tituloIdNumber = parseInt(String(this.nuevoCiclo.titulo_id), 10);
+    // Convertir titulo_id a número
+    const tituloIdNumber = typeof this.nuevoCiclo.titulo_id === 'number' 
+      ? this.nuevoCiclo.titulo_id 
+      : parseInt(String(this.nuevoCiclo.titulo_id), 10);
     
     console.log('=== DEBUG TITULO_ID ===');
     console.log('nuevoCiclo.titulo_id:', this.nuevoCiclo.titulo_id, typeof this.nuevoCiclo.titulo_id);
-    console.log('tituloIdNumber después de parseInt:', tituloIdNumber, typeof tituloIdNumber);
+    console.log('tituloIdNumber:', tituloIdNumber, typeof tituloIdNumber);
     console.log('isNaN:', isNaN(tituloIdNumber));
     console.log('es mayor que 0:', tituloIdNumber > 0);
-    
-    if (isNaN(tituloIdNumber) || tituloIdNumber <= 0) {
-      alert(`El título seleccionado no es válido (${this.nuevoCiclo.titulo_id}). Por favor selecciona otro.`);
-      this.guardandoCiclo = false;
-      return;
-    }
     
     const cicloData = {
       nombre: this.nuevoCiclo.nombre,

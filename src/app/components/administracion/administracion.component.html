@@ -170,10 +170,10 @@
             name="titulo_id"
             [disabled]="!nuevoCiclo.tipo_grado || cargandoTitulos"
             required>
-            <option [value]="''">
+            <option [ngValue]="null">
               {{ cargandoTitulos ? 'Cargando títulos...' : (nuevoCiclo.tipo_grado ? '-- Selecciona un título --' : '-- Primero selecciona el tipo de grado --') }}
             </option>
-            <option *ngFor="let titulo of titulosDisponibles" [value]="titulo.titulo_id || titulo.id">
+            <option *ngFor="let titulo of titulosDisponibles" [ngValue]="titulo.id">
               {{ titulo.nombre }}
             </option>
           </select>
