@@ -237,6 +237,18 @@ export class ApiService {
     );
   }
 
+  crearCiclo(ciclo: any): Observable<{ success: boolean; id?: number; error?: string }> {
+    return this.http.post<{ success: boolean; id?: number; error?: string }>(
+      `${this.API_URL}/practicas/ciclos`,
+      ciclo
+    ).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al crear ciclo:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   getCicloConModulos(cicloId: number): Observable<any> {
     return this.http.get<any>(`${this.API_URL}/practicas/ciclos/${cicloId}/modulos`).pipe(
       map(response => {

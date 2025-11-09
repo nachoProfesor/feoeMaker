@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 
@@ -9,18 +10,35 @@ interface CicloFormativo {
   nombre: string;
   descripcion: string;
   tipo_grado: string;
+  titulo_id?: number;
+}
+
+interface NuevoCiclo {
+  nombre: string;
+  siglas: string;
+  clave: string;
+  titulo_id: number | null;
 }
 
 @Component({
   selector: 'app-administracion',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './administracion.component.html',
   styleUrl: './administracion.component.css'
 })
 export class AdministracionComponent implements OnInit {
   mostrarModalCiclo = false;
+  mostrarModalCrearCiclo = false;
   cargandoCiclos = false;
+  guardandoCiclo = false;
   ciclosFormativos: CicloFormativo[] = [];
+  
+  nuevoCiclo: NuevoCiclo = {
+    nombre: '',
+    siglas: '',
+    clave: '',
+    titulo_id: null
+  };
 
   constructor(
     private router: Router,
@@ -46,6 +64,11 @@ export class AdministracionComponent implements OnInit {
   }
 
   abrirGestionPFI() {
+    if (this.ciclosFormativos.length === 0) {
+      alert('Primero debes crear ciclos formativos');
+      this.abrirModalCrearCiclo();
+      return;
+    }
     this.mostrarModalCiclo = true;
   }
 
@@ -55,12 +78,56 @@ export class AdministracionComponent implements OnInit {
 
   seleccionarCiclo(ciclo: CicloFormativo) {
     console.log('Ciclo seleccionado:', ciclo);
-    // Aquí navegaremos a la página de definición del PFI
     this.router.navigate(['/administracion/pfi', ciclo.id]);
   }
 
+  abrirModalCrearCiclo() {
+    this.mostrarModalCrearCiclo = true;
+    this.cerrarModalCiclo();
+  }
+
+  cerrarModalCrearCiclo() {
+    this.mostrarModalCrearCiclo = false;
+    this.nuevoCiclo = {
+      nombre: '',
+      siglas: '',
+      clave: '',
+      titulo_id: null
+    };
+  }
+
+  crearCiclo() {
+    if (!this.nuevoCiclo.nombre || !this.nuevoCiclo.siglas || !this.nuevoCiclo.clave) {
+      alert('Por favor completa todos los campos obligatorios');
+      return;
+    }
+
+    this.guardandoCiclo = true;
+
+    const cicloData = {
+      nombre: this.nuevoCiclo.nombre,
+      siglas: this.nuevoCiclo.siglas,
+      clave: this.nuevoCiclo.clave,
+      titulo_id: this.nuevoCiclo.titulo_id
+    };
+
+    this.apiService.crearCiclo(cicloData).subscribe({
+      next: (response: any) => {
+        console.log('Ciclo creado:', response);
+        this.guardandoCiclo = false;
+        alert('Ciclo formativo creado correctamente');
+        this.cerrarModalCrearCiclo();
+        this.cargarCiclos();
+      },
+      error: (error: any) => {
+        console.error('Error al crear ciclo:', error);
+        this.guardandoCiclo = false;
+        alert('Error al crear el ciclo: ' + (error.error?.error || error.message));
+      }
+    });
+  }
+
   gestionarCiclos() {
-    // Por ahora solo mostramos el modal
-    this.mostrarModalCiclo = true;
+    this.abrirModalCrearCiclo();
   }
 }

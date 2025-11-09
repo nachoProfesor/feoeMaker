@@ -70,7 +70,14 @@
           <p>Cargando ciclos formativos...</p>
         </div>
 
-        <div *ngIf="!cargandoCiclos" class="ciclos-list">
+        <div *ngIf="!cargandoCiclos && ciclosFormativos.length === 0" class="empty-state-modal">
+          <p>No hay ciclos formativos creados</p>
+          <button class="btn-crear-ciclo" (click)="abrirModalCrearCiclo()">
+            Crear Primer Ciclo
+          </button>
+        </div>
+
+        <div *ngIf="!cargandoCiclos && ciclosFormativos.length > 0" class="ciclos-list">
           <div *ngFor="let ciclo of ciclosFormativos" 
                class="ciclo-item" 
                (click)="seleccionarCiclo(ciclo)">
@@ -85,6 +92,73 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Ciclo -->
+<div *ngIf="mostrarModalCrearCiclo" class="modal-overlay" (click)="cerrarModalCrearCiclo()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Crear Nuevo Ciclo Formativo</h3>
+      <button class="btn-close" (click)="cerrarModalCrearCiclo()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="crearCiclo()">
+        <div class="form-group">
+          <label for="nombre">Nombre *</label>
+          <input 
+            type="text" 
+            id="nombre" 
+            [(ngModel)]="nuevoCiclo.nombre" 
+            name="nombre"
+            placeholder="ej: Desarrollo de Aplicaciones Multiplataforma"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="siglas">Siglas *</label>
+          <input 
+            type="text" 
+            id="siglas" 
+            [(ngModel)]="nuevoCiclo.siglas" 
+            name="siglas"
+            placeholder="ej: DAM"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="clave">Clave *</label>
+          <input 
+            type="text" 
+            id="clave" 
+            [(ngModel)]="nuevoCiclo.clave" 
+            name="clave"
+            placeholder="ej: IFC3-2"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="titulo_id">Título ID (opcional)</label>
+          <input 
+            type="number" 
+            id="titulo_id" 
+            [(ngModel)]="nuevoCiclo.titulo_id" 
+            name="titulo_id"
+            placeholder="ID del título asociado">
+          <small>Deja en blanco si no sabes el ID del título</small>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cerrarModalCrearCiclo()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="guardandoCiclo">
+            {{ guardandoCiclo ? 'Guardando...' : 'Crear Ciclo' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
