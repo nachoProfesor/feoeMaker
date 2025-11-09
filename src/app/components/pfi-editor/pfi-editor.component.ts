@@ -43,6 +43,7 @@ interface Ciclo {
 export class PfiEditorComponent implements OnInit {
   cicloId: number = 0;
   ciclo: Ciclo | null = null;
+  tituloId: number | null = null; // Necesario para guardar el PFI
   modulos: Modulo[] = [];
   cargando = true;
   guardando = false;
@@ -67,15 +68,17 @@ export class PfiEditorComponent implements OnInit {
     this.apiService.getCicloConModulos(this.cicloId).subscribe({
       next: (data: any) => {
         this.ciclo = data.ciclo;
-        this.modulos = data.modulos.map((m: Modulo) => ({
+        this.tituloId = data.titulo_id; // Guardar titulo_id para usarlo al guardar
+        // Si no hay módulos, inicializar como array vacío
+        this.modulos = (data.modulos || []).map((m: Modulo) => ({
           ...m,
           seleccionado: false,
           expandido: false,
-          resultados_aprendizaje: m.resultados_aprendizaje.map(ra => ({
+          resultados_aprendizaje: (m.resultados_aprendizaje || []).map(ra => ({
             ...ra,
             ubicacion: 'centro',
             mostrarCEs: false,
-            criterios_evaluacion: ra.criterios_evaluacion.map(ce => ({
+            criterios_evaluacion: (ra.criterios_evaluacion || []).map(ce => ({
               ...ce,
               ubicacion: 'centro'
             }))
@@ -86,7 +89,9 @@ export class PfiEditorComponent implements OnInit {
       error: (error: any) => {
         console.error('Error cargando datos:', error);
         this.cargando = false;
-        alert('Error al cargar los datos del ciclo');
+        alert('Error al cargar los datos del ciclo. El endpoint puede no estar implementado todavía en el backend.');
+        // Volver a la página anterior
+        this.volver();
       }
     });
   }
@@ -118,44 +123,62 @@ export class PfiEditorComponent implements OnInit {
   }
 
   guardarPFI() {
+    if (!this.tituloId) {
+      alert('No se puede guardar: falta el título asociado al ciclo');
+      return;
+    }
+
     this.guardando = true;
 
+    // Construir los módulos en el formato esperado por el backend
+    const modulos: any[] = [];
+    
+    this.modulos
+      .filter(m => m.seleccionado)
+      .forEach(m => {
+        m.resultados_aprendizaje.forEach((ra, raIndex) => {
+          // Si el RA es de tipo 'centro' o 'empresa', crear un registro completo
+          if (ra.ubicacion === 'centro' || ra.ubicacion === 'empresa') {
+            modulos.push({
+              codigo: `${m.codigo}-RA${raIndex + 1}`,
+              nombre: m.nombre,
+              empresa_o_centro: ra.ubicacion === 'centro' ? 'C' : 'E'
+            });
+          }
+          // Si es 'parcial', crear registros individuales por CE
+          else if (ra.ubicacion === 'parcial') {
+            ra.criterios_evaluacion.forEach((ce, ceIndex) => {
+              modulos.push({
+                codigo: `${m.codigo}-RA${raIndex + 1}-CE${ceIndex + 1}`,
+                nombre: `${m.nombre} - RA${raIndex + 1} - CE${ceIndex + 1}`,
+                empresa_o_centro: ce.ubicacion === 'centro' ? 'C' : 'E'
+              });
+            });
+          }
+        });
+      });
+
     const pfiData = {
+      titulo_id: this.tituloId,
       ciclo_id: this.cicloId,
-      modulos: this.modulos
-        .filter(m => m.seleccionado)
-        .map(m => ({
-          codigo: m.codigo,
-          nombre: m.nombre,
-          resultados_aprendizaje: m.resultados_aprendizaje.map((ra, raIndex) => ({
-            indice: raIndex + 1,
-            descripcion: ra.descripcion,
-            ubicacion: ra.ubicacion,
-            criterios_evaluacion: ra.ubicacion === 'parcial' 
-              ? ra.criterios_evaluacion.map((ce, ceIndex) => ({
-                  indice: ceIndex + 1,
-                  descripcion: ce.descripcion,
-                  ubicacion: ce.ubicacion
-                }))
-              : []
-          }))
-        }))
+      codigo_ra: `${this.ciclo?.codigo || 'PFI'}-${new Date().getFullYear()}`,
+      tutor_centro_id: null, // Puedes agregar un selector de tutor si lo necesitas
+      modulos: modulos
     };
 
     console.log('Guardando PFI:', pfiData);
 
-    // Aquí llamarías al servicio para guardar
     this.apiService.guardarPFI(pfiData).subscribe({
       next: (response: any) => {
         console.log('PFI guardado:', response);
         this.guardando = false;
-        alert('PFI guardado correctamente');
+        alert(`PFI guardado correctamente (ID: ${response.pfi_id})`);
         this.volver();
       },
       error: (error: any) => {
         console.error('Error guardando PFI:', error);
         this.guardando = false;
-        alert('Error al guardar el PFI');
+        alert('Error al guardar el PFI: ' + (error.error?.error || error.message));
       }
     });
   }

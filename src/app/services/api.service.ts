@@ -243,10 +243,11 @@ export class ApiService {
         if (response.success) {
           return {
             ciclo: response.ciclo,
-            modulos: response.modulos || []
+            modulos: response.modulos || [],
+            titulo_id: response.titulo_id // Necesario para guardar el PFI
           };
         }
-        return { ciclo: null, modulos: [] };
+        return { ciclo: null, modulos: [], titulo_id: null };
       }),
       catchError((error: HttpErrorResponse) => {
         console.error('Error al obtener ciclo con módulos:', error);
@@ -255,8 +256,8 @@ export class ApiService {
     );
   }
 
-  guardarPFI(pfiData: any): Observable<{ success: boolean; id?: number; error?: string }> {
-    return this.http.post<{ success: boolean; id?: number; error?: string }>(
+  guardarPFI(pfiData: any): Observable<{ success: boolean; pfi_id?: number; message?: string; error?: string }> {
+    return this.http.post<{ success: boolean; pfi_id?: number; message?: string; error?: string }>(
       `${this.API_URL}/practicas/pfi`,
       pfiData
     ).pipe(
