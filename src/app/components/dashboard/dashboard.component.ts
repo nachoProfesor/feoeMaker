@@ -46,6 +46,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.createConveniosChart();
   }
 
+  private isDarkMode(): boolean {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  private getTextColor(): string {
+    return this.isDarkMode() ? '#f9fafb' : '#111827';
+  }
+
+  private getGridColor(): string {
+    return this.isDarkMode() ? '#374151' : '#e5e7eb';
+  }
+
   createAlumnosChart(): void {
     const ctx = this.alumnosChartRef.nativeElement.getContext('2d');
     this.alumnosChart = new Chart(ctx, {
@@ -68,7 +80,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'bottom'
+            position: 'bottom',
+            labels: {
+              color: this.getTextColor(),
+              font: {
+                family: 'Inter'
+              }
+            }
           }
         }
       }
@@ -100,12 +118,25 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           y: {
             beginAtZero: true,
             grid: {
-              display: true
+              display: true,
+              color: this.getGridColor()
+            },
+            ticks: {
+              color: this.getTextColor(),
+              font: {
+                family: 'Inter'
+              }
             }
           },
           x: {
             grid: {
               display: false
+            },
+            ticks: {
+              color: this.getTextColor(),
+              font: {
+                family: 'Inter'
+              }
             }
           }
         }
