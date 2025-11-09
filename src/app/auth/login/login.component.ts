@@ -19,8 +19,8 @@ export class LoginComponent {
     this.authService.loginWithGoogle().subscribe({
       next: (user) => {
         console.log('Login exitoso:', user);
-        // Redirigir a la página principal
-        this.router.navigate(['/']);
+        // Redirigir al formulario
+        this.router.navigate(['/formulario']);
       },
       error: (error) => {
         console.error('Error en login:', error);

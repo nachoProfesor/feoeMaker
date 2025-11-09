@@ -6,9 +6,14 @@ import { authGuard } from './auth/auth.guard';
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { 
-    path: '', 
+    path: 'formulario', 
     component: ConvenioFormComponent,
-    // canActivate: [authGuard] // Descomentar cuando quieras activar la protección
+    canActivate: [authGuard] // Protegido: requiere autenticación
   },
-  { path: '**', redirectTo: '' }
+  { 
+    path: '', 
+    redirectTo: 'formulario', 
+    pathMatch: 'full' 
+  },
+  { path: '**', redirectTo: 'formulario' }
 ];
