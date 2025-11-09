@@ -113,22 +113,21 @@ export class ApiService {
     );
   }
 
-  // Obtener títulos por tipo de grado
-  getTitulos(tipoGrado: string = 'superior'): Observable<Titulo[]> {
-    const url = `${this.API_URL}/titulos/${tipoGrado}`;
+  // Obtener todos los títulos (sin filtrar por tipo de grado en backend)
+  getTitulos(): Observable<any[]> {
+    const url = `${this.API_URL}/practicas/titulos`;
     console.log('Llamando a API:', url);
-    return this.http.get<TitulosResponse>(url).pipe(
+    return this.http.get<any>(url).pipe(
       map(response => {
-        console.log('Respuesta de API:', response);
+        console.log('Respuesta de API titulos:', response);
         if (response.success && response.titulos) {
-          return response.titulos.map(nombre => ({ nombre }));
+          return response.titulos;
         }
-        return [];
+        // Si no tiene la estructura esperada, devolver array vacío
+        return Array.isArray(response) ? response : [];
       }),
       catchError((error: HttpErrorResponse) => {
-        console.error('Error HTTP:', error);
-        console.error('Status:', error.status);
-        console.error('Message:', error.message);
+        console.error('Error HTTP al obtener títulos:', error);
         return throwError(() => error);
       })
     );

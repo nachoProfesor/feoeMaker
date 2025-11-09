@@ -180,6 +180,9 @@
           <small *ngIf="titulosDisponibles.length > 0" style="color: var(--text-secondary);">
             {{ titulosDisponibles.length }} título(s) disponible(s)
           </small>
+          <small style="display: block; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.7rem;">
+            Debug: titulo_id = {{ nuevoCiclo.titulo_id }} ({{ nuevoCiclo.titulo_id === null ? 'null' : typeof nuevoCiclo.titulo_id }})
+          </small>
         </div>
 
         <div class="form-actions">

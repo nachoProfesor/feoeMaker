@@ -90,11 +90,13 @@ export class AdministracionComponent implements OnInit {
     
     if (tipoGrado) {
       this.cargandoTitulos = true;
-      this.apiService.getTitulos(tipoGrado).subscribe({
+      this.apiService.getTitulos().subscribe({
         next: (titulos: any) => {
-          console.log('Títulos recibidos del backend:', titulos);
-          console.log('Primer título:', titulos[0]);
-          this.titulosDisponibles = titulos;
+          console.log('Todos los títulos recibidos del backend:', titulos);
+          // Filtrar por tipo_grado en el frontend
+          this.titulosDisponibles = titulos.filter((t: any) => t.tipo_grado === tipoGrado);
+          console.log(`Títulos filtrados para ${tipoGrado}:`, this.titulosDisponibles);
+          console.log('Primer título filtrado:', this.titulosDisponibles[0]);
           this.cargandoTitulos = false;
         },
         error: (error: any) => {
