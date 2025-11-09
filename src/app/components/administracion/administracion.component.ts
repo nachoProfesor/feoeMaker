@@ -198,7 +198,7 @@ export class AdministracionComponent implements OnInit {
       nombre: this.nuevoCiclo.nombre,
       siglas: this.nuevoCiclo.siglas,
       clave: this.nuevoCiclo.clave,
-      titulo_id: this.nuevoCiclo.titulo_id
+      titulo_id: Number(this.nuevoCiclo.titulo_id)
     };
 
     if (this.cicloEditando) {
