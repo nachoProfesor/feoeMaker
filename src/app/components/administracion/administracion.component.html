@@ -148,14 +148,35 @@
         </div>
 
         <div class="form-group">
-          <label for="titulo_id">Título ID (opcional)</label>
-          <input 
-            type="number" 
+          <label for="tipo_grado">Tipo de Grado *</label>
+          <select 
+            id="tipo_grado" 
+            [(ngModel)]="nuevoCiclo.tipo_grado" 
+            name="tipo_grado"
+            (change)="onTipoGradoChange($any($event.target).value)"
+            required>
+            <option value="">-- Selecciona tipo de grado --</option>
+            <option *ngFor="let tipo of tiposGrado" [value]="tipo.valor">
+              {{ tipo.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="titulo_id">Título *</label>
+          <select 
             id="titulo_id" 
             [(ngModel)]="nuevoCiclo.titulo_id" 
             name="titulo_id"
-            placeholder="ID del título asociado">
-          <small>Deja en blanco si no sabes el ID del título</small>
+            [disabled]="!nuevoCiclo.tipo_grado || cargandoTitulos"
+            required>
+            <option [value]="null">
+              {{ cargandoTitulos ? 'Cargando títulos...' : (nuevoCiclo.tipo_grado ? '-- Selecciona un título --' : '-- Primero selecciona el tipo de grado --') }}
+            </option>
+            <option *ngFor="let titulo of titulosDisponibles" [value]="titulo.id">
+              {{ titulo.nombre }}
+            </option>
+          </select>
         </div>
 
         <div class="form-actions">

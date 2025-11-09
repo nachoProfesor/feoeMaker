@@ -17,7 +17,13 @@ interface NuevoCiclo {
   nombre: string;
   siglas: string;
   clave: string;
+  tipo_grado: string;
   titulo_id: number | null;
+}
+
+interface Titulo {
+  id: number;
+  nombre: string;
 }
 
 @Component({
@@ -32,13 +38,22 @@ export class AdministracionComponent implements OnInit {
   mostrarModalGestionarCiclos = false;
   cargandoCiclos = false;
   guardandoCiclo = false;
+  cargandoTitulos = false;
   ciclosFormativos: CicloFormativo[] = [];
+  titulosDisponibles: Titulo[] = [];
   cicloEditando: CicloFormativo | null = null;
+  
+  tiposGrado = [
+    { valor: 'basico', nombre: 'Grado Básico' },
+    { valor: 'medio', nombre: 'Grado Medio' },
+    { valor: 'superior', nombre: 'Grado Superior' }
+  ];
   
   nuevoCiclo: NuevoCiclo = {
     nombre: '',
     siglas: '',
     clave: '',
+    tipo_grado: '',
     titulo_id: null
   };
 
@@ -65,6 +80,26 @@ export class AdministracionComponent implements OnInit {
     });
   }
 
+  onTipoGradoChange(tipoGrado: string) {
+    this.nuevoCiclo.tipo_grado = tipoGrado;
+    this.nuevoCiclo.titulo_id = null;
+    this.titulosDisponibles = [];
+    
+    if (tipoGrado) {
+      this.cargandoTitulos = true;
+      this.apiService.getTitulos(tipoGrado).subscribe({
+        next: (titulos: any) => {
+          this.titulosDisponibles = titulos;
+          this.cargandoTitulos = false;
+        },
+        error: (error: any) => {
+          console.error('Error cargando títulos:', error);
+          this.cargandoTitulos = false;
+        }
+      });
+    }
+  }
+
   abrirGestionPFI() {
     if (this.ciclosFormativos.length === 0) {
       alert('Primero debes crear ciclos formativos');
@@ -88,10 +123,12 @@ export class AdministracionComponent implements OnInit {
     this.cerrarModalCiclo();
     this.cerrarModalGestionarCiclos();
     this.cicloEditando = null;
+    this.titulosDisponibles = [];
     this.nuevoCiclo = {
       nombre: '',
       siglas: '',
       clave: '',
+      tipo_grado: '',
       titulo_id: null
     };
   }
@@ -99,10 +136,12 @@ export class AdministracionComponent implements OnInit {
   cerrarModalCrearCiclo() {
     this.mostrarModalCrearCiclo = false;
     this.cicloEditando = null;
+    this.titulosDisponibles = [];
     this.nuevoCiclo = {
       nombre: '',
       siglas: '',
       clave: '',
+      tipo_grado: '',
       titulo_id: null
     };
   }
@@ -122,8 +161,13 @@ export class AdministracionComponent implements OnInit {
       nombre: ciclo.nombre,
       siglas: ciclo.codigo, // Asumiendo que codigo es las siglas
       clave: ciclo.descripcion, // O ajusta según tu modelo
+      tipo_grado: ciclo.tipo_grado || '',
       titulo_id: ciclo.titulo_id || null
     };
+    // Cargar títulos para el tipo de grado del ciclo
+    if (ciclo.tipo_grado) {
+      this.onTipoGradoChange(ciclo.tipo_grado);
+    }
     this.cerrarModalGestionarCiclos();
     this.mostrarModalCrearCiclo = true;
   }
