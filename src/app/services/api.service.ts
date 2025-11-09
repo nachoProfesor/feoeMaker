@@ -237,12 +237,21 @@ export class ApiService {
   }
 
   crearCiclo(ciclo: any): Observable<{ success: boolean; id?: number; error?: string }> {
+    console.log('=== API SERVICE: crearCiclo ===');
+    console.log('URL:', `${this.API_URL}/practicas/ciclos`);
+    console.log('Datos a enviar:', ciclo);
+    console.log('Datos stringificados:', JSON.stringify(ciclo));
+    console.log('================================');
+    
     return this.http.post<{ success: boolean; id?: number; error?: string }>(
       `${this.API_URL}/practicas/ciclos`,
       ciclo
     ).pipe(
       catchError((error: HttpErrorResponse) => {
-        console.error('Error al crear ciclo:', error);
+        console.error('=== ERROR EN API SERVICE ===');
+        console.error('Error completo:', error);
+        console.error('error.error:', error.error);
+        console.error('============================');
         return throwError(() => error);
       })
     );
@@ -251,11 +260,19 @@ export class ApiService {
   getCicloConModulos(cicloId: number): Observable<any> {
     return this.http.get<any>(`${this.API_URL}/practicas/ciclos/${cicloId}/modulos`).pipe(
       map(response => {
+        console.log('=== API SERVICE: getCicloConModulos ===');
+        console.log('Respuesta completa del backend:', response);
+        console.log('response.success:', response.success);
+        console.log('response.ciclo:', response.ciclo);
+        console.log('response.modulos:', response.modulos);
+        console.log('response.ciclo?.titulo_id:', response.ciclo?.titulo_id);
+        console.log('=====================================');
+        
         if (response.success) {
           return {
             ciclo: response.ciclo,
             modulos: response.modulos || [],
-            titulo_id: response.titulo_id // Necesario para guardar el PFI
+            titulo_id: response.ciclo?.titulo_id || response.titulo_id // Buscar en ciclo primero
           };
         }
         return { ciclo: null, modulos: [], titulo_id: null };
