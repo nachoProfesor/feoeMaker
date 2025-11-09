@@ -7,6 +7,7 @@ import { AlumnosComponent } from './components/alumnos/alumnos.component';
 import { EmpresasComponent } from './components/empresas/empresas.component';
 import { PropuestasComponent } from './components/propuestas/propuestas.component';
 import { PfiEditorComponent } from './components/pfi-editor/pfi-editor.component';
+import { PfiListComponent } from './components/pfi-list/pfi-list.component';
 import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
@@ -23,6 +24,16 @@ export const routes: Routes = [
   },
   { 
     path: 'administracion/pfi/:cicloId', 
+    component: PfiListComponent,
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'administracion/pfi/nuevo/:cicloId', 
+    component: PfiEditorComponent,
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'administracion/pfi/editar/:pfiId', 
     component: PfiEditorComponent,
     canActivate: [authGuard]
   },

@@ -268,6 +268,21 @@ export class ApiService {
     );
   }
 
+  getPFIsPorCiclo(cicloId: number): Observable<any[]> {
+    return this.http.get<any>(`${this.API_URL}/practicas/pfi/ciclo/${cicloId}`).pipe(
+      map(response => {
+        if (response.success && response.data) {
+          return response.data;
+        }
+        return [];
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener PFIs del ciclo:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   // ============================================
   // ALUMNOS
   // ============================================

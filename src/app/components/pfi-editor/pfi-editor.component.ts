@@ -42,6 +42,8 @@ interface Ciclo {
 })
 export class PfiEditorComponent implements OnInit {
   cicloId: number = 0;
+  pfiId: number | null = null; // Para modo edición
+  esNuevo = true; // true = crear nuevo, false = editar existente
   ciclo: Ciclo | null = null;
   tituloId: number | null = null; // Necesario para guardar el PFI
   modulos: Modulo[] = [];
@@ -56,8 +58,17 @@ export class PfiEditorComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      this.cicloId = +params['cicloId'];
-      this.cargarDatos();
+      // Verificar si es modo creación o edición
+      if (params['pfiId']) {
+        this.pfiId = +params['pfiId'];
+        this.esNuevo = false;
+        // TODO: Cargar datos del PFI existente
+        alert('Modo edición aún no implementado. Necesitas endpoint GET /api/practicas/pfi/{id}');
+      } else if (params['cicloId']) {
+        this.cicloId = +params['cicloId'];
+        this.esNuevo = true;
+        this.cargarDatos();
+      }
     });
   }
 
@@ -184,6 +195,10 @@ export class PfiEditorComponent implements OnInit {
   }
 
   volver() {
-    this.router.navigate(['/administracion']);
+    if (this.cicloId) {
+      this.router.navigate(['/administracion/pfi', this.cicloId]);
+    } else {
+      this.router.navigate(['/administracion']);
+    }
   }
 }
