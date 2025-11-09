@@ -75,9 +75,18 @@ export class PfiEditorComponent implements OnInit {
   cargarDatos() {
     this.cargando = true;
     
+    console.log('=== CARGANDO DATOS PFI ===');
+    console.log('Ciclo ID:', this.cicloId);
+    
     // Cargar información del ciclo y sus módulos
     this.apiService.getCicloConModulos(this.cicloId).subscribe({
       next: (data: any) => {
+        console.log('Datos recibidos del backend:', data);
+        console.log('Ciclo:', data.ciclo);
+        console.log('Título ID:', data.titulo_id);
+        console.log('Módulos:', data.modulos);
+        console.log('Número de módulos:', data.modulos ? data.modulos.length : 0);
+        
         this.ciclo = data.ciclo;
         this.tituloId = data.titulo_id; // Guardar titulo_id para usarlo al guardar
         // Si no hay módulos, inicializar como array vacío
@@ -95,13 +104,27 @@ export class PfiEditorComponent implements OnInit {
             }))
           }))
         }));
+        
+        console.log('Módulos procesados:', this.modulos);
+        console.log('========================');
         this.cargando = false;
       },
       error: (error: any) => {
-        console.error('Error cargando datos:', error);
+        console.error('=== ERROR AL CARGAR DATOS ===');
+        console.error('Error completo:', error);
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+        console.error('============================');
         this.cargando = false;
-        alert('Error al cargar los datos del ciclo. El endpoint puede no estar implementado todavía en el backend.');
-        // Volver a la página anterior
+        
+        let errorMsg = 'Error al cargar los datos del ciclo.';
+        if (error.status === 404) {
+          errorMsg += ' El endpoint /practicas/ciclos/' + this.cicloId + '/modulos no existe en el backend.';
+        } else if (error.status === 0) {
+          errorMsg += ' No se pudo conectar con el servidor.';
+        }
+        
+        alert(errorMsg);
         this.volver();
       }
     });
