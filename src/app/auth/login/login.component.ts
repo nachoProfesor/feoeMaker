@@ -19,7 +19,7 @@ export class LoginComponent {
     this.authService.loginWithGoogle().subscribe({
       next: (user) => {
         console.log('Login exitoso:', user);
-        // Redirigir al formulario
+        // Redirigir al formulario tras login exitoso
         this.router.navigate(['/formulario']);
       },
       error: (error) => {
