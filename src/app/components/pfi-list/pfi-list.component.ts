@@ -48,17 +48,32 @@ export class PfiListComponent implements OnInit {
   cargarDatos(): void {
     this.cargando = true;
 
-    // Cargar información del ciclo
+    // Cargar información del ciclo primero
     this.apiService.getCiclosFormativos().subscribe({
       next: (ciclos) => {
         this.ciclo = ciclos.find(c => c.id === this.cicloId) || null;
+        
+        if (!this.ciclo) {
+          console.error('Ciclo no encontrado');
+          this.cargando = false;
+          alert('No se pudo encontrar el ciclo seleccionado');
+          this.volver();
+          return;
+        }
+
+        // Una vez cargado el ciclo, cargar los PFIs
+        this.cargarPFIs();
       },
       error: (error) => {
-        console.error('Error al cargar ciclo:', error);
+        console.error('Error al cargar ciclos:', error);
+        this.cargando = false;
+        alert('Error al conectar con el servidor. Por favor, verifica que el backend esté activo.');
+        this.volver();
       }
     });
+  }
 
-    // Cargar PFIs del ciclo
+  cargarPFIs(): void {
     this.apiService.getPFIsPorCiclo(this.cicloId).subscribe({
       next: (pfis) => {
         this.pfis = pfis;
@@ -67,6 +82,10 @@ export class PfiListComponent implements OnInit {
       error: (error) => {
         console.error('Error al cargar PFIs:', error);
         this.cargando = false;
+        // No mostrar error si simplemente no hay PFIs (404 podría ser normal)
+        if (error.status !== 404) {
+          alert('Error al cargar los PFIs del ciclo. El backend puede estar iniciándose (espera 30-60s).');
+        }
       }
     });
   }
