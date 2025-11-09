@@ -173,10 +173,13 @@
             <option [value]="''">
               {{ cargandoTitulos ? 'Cargando títulos...' : (nuevoCiclo.tipo_grado ? '-- Selecciona un título --' : '-- Primero selecciona el tipo de grado --') }}
             </option>
-            <option *ngFor="let titulo of titulosDisponibles" [value]="titulo.id">
+            <option *ngFor="let titulo of titulosDisponibles" [value]="titulo.titulo_id || titulo.id">
               {{ titulo.nombre }}
             </option>
           </select>
+          <small *ngIf="titulosDisponibles.length > 0" style="color: var(--text-secondary);">
+            {{ titulosDisponibles.length }} título(s) disponible(s)
+          </small>
         </div>
 
         <div class="form-actions">

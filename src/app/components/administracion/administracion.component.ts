@@ -22,8 +22,11 @@ interface NuevoCiclo {
 }
 
 interface Titulo {
-  id: number;
+  id?: number;
+  titulo_id?: number;
   nombre: string;
+  tipo_grado?: string;
+  [key: string]: any; // Para soportar otros campos que pueda devolver el backend
 }
 
 @Component({
@@ -89,6 +92,8 @@ export class AdministracionComponent implements OnInit {
       this.cargandoTitulos = true;
       this.apiService.getTitulos(tipoGrado).subscribe({
         next: (titulos: any) => {
+          console.log('Títulos recibidos del backend:', titulos);
+          console.log('Primer título:', titulos[0]);
           this.titulosDisponibles = titulos;
           this.cargandoTitulos = false;
         },
@@ -194,12 +199,28 @@ export class AdministracionComponent implements OnInit {
 
     this.guardandoCiclo = true;
 
+    // Asegurar que titulo_id sea un número válido
+    const tituloIdNumber = Number(this.nuevoCiclo.titulo_id);
+    
+    if (isNaN(tituloIdNumber) || tituloIdNumber === 0) {
+      alert('El título seleccionado no es válido. Por favor selecciona otro.');
+      this.guardandoCiclo = false;
+      return;
+    }
+    
     const cicloData = {
       nombre: this.nuevoCiclo.nombre,
       siglas: this.nuevoCiclo.siglas,
       clave: this.nuevoCiclo.clave,
-      titulo_id: Number(this.nuevoCiclo.titulo_id)
+      titulo_id: tituloIdNumber
     };
+
+    console.log('=== DATOS A ENVIAR ===');
+    console.log('Datos del ciclo a enviar:', cicloData);
+    console.log('nuevoCiclo.titulo_id original:', this.nuevoCiclo.titulo_id, typeof this.nuevoCiclo.titulo_id);
+    console.log('titulo_id final:', cicloData.titulo_id, typeof cicloData.titulo_id);
+    console.log('Títulos disponibles:', this.titulosDisponibles);
+    console.log('=====================');
 
     if (this.cicloEditando) {
       // Modo edición - TODO: implementar cuando exista el endpoint PUT
