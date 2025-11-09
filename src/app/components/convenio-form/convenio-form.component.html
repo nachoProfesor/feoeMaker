@@ -85,21 +85,29 @@
       </div>
       <div class="card-body" formGroupName="formacion">
         <div class="row">
-          <div class="col-md-6 mb-3">
+          <div class="col-md-4 mb-3">
+            <label for="tipoGrado" class="form-label">Tipo de Grado</label>
+            <select id="tipoGrado" class="form-select" formControlName="tipoGrado">
+              <option value="superior">Grado Superior</option>
+              <option value="medio">Grado Medio</option>
+              <option value="basico">FP Básica</option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-3">
             <label for="titulo" class="form-label">Título</label>
-            <select id="titulo" class="form-select" formControlName="tituloId">
+            <select id="titulo" class="form-select" formControlName="titulo">
               <option value="">Seleccione un título...</option>
-              <option *ngFor="let titulo of titulos" [value]="titulo.id">
+              <option *ngFor="let titulo of titulos" [value]="titulo.nombre">
                 {{ titulo.nombre }}
               </option>
             </select>
             <div *ngIf="loadingTitulos" class="text-muted mt-1">Cargando títulos...</div>
           </div>
-          <div class="col-md-6 mb-3">
+          <div class="col-md-4 mb-3">
             <label for="modulo" class="form-label">Módulo</label>
-            <select id="modulo" class="form-select" formControlName="moduloId" [disabled]="!modulos.length">
+            <select id="modulo" class="form-select" formControlName="modulo" [disabled]="!modulos.length">
               <option value="">Seleccione un módulo...</option>
-              <option *ngFor="let modulo of modulos" [value]="modulo.id">
+              <option *ngFor="let modulo of modulos" [value]="modulo.nombre">
                 {{ modulo.nombre }}
               </option>
             </select>

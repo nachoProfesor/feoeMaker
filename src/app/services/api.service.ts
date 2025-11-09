@@ -1,32 +1,58 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface CE {
-  id?: string;
-  codigo?: string;
   descripcion: string;
 }
 
 export interface RA {
-  id?: string;
-  codigo?: string;
   descripcion: string;
-  ces?: CE[];
+  criterios_evaluacion: CE[];
 }
 
 export interface Modulo {
-  id?: string;
-  codigo?: string;
   nombre: string;
-  ras?: RA[];
+  codigo: string;
+  horas: string;
+  num_ras: number;
+  num_ces: number;
+  resultados_aprendizaje: RA[];
 }
 
 export interface Titulo {
-  id?: string;
-  codigo?: string;
   nombre: string;
-  modulos?: Modulo[];
+  codigo?: string;
+}
+
+export interface TipoGrado {
+  tipo: string;
+  nombre: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+export interface TitulosResponse {
+  success: boolean;
+  tipo_grado: string;
+  titulos: string[];
+  total: number;
+}
+
+export interface ExtraerResponse {
+  success: boolean;
+  tipo_grado: string;
+  titulo: string;
+  estadisticas: {
+    total_modulos: number;
+    total_ras: number;
+    total_ces: number;
+  };
+  modulos: Modulo[];
 }
 
 @Injectable({
@@ -37,31 +63,42 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  getTitulos(): Observable<Titulo[]> {
-    return this.http.get<Titulo[]>(`${this.API_URL}/titulos`);
+  // Obtener tipos de grado disponibles
+  getTiposGrado(): Observable<TipoGrado[]> {
+    return this.http.get<any>(`${this.API_URL}/tipos`).pipe(
+      map(response => response.tipos || [])
+    );
   }
 
-  getTituloById(id: string): Observable<Titulo> {
-    return this.http.get<Titulo>(`${this.API_URL}/titulos/${id}`);
+  // Obtener títulos por tipo de grado
+  getTitulos(tipoGrado: string = 'superior'): Observable<Titulo[]> {
+    return this.http.get<TitulosResponse>(`${this.API_URL}/titulos/${tipoGrado}`).pipe(
+      map(response => {
+        if (response.success && response.titulos) {
+          return response.titulos.map(nombre => ({ nombre }));
+        }
+        return [];
+      })
+    );
   }
 
-  getModulosByTitulo(tituloId: string): Observable<Modulo[]> {
-    return this.http.get<Modulo[]>(`${this.API_URL}/titulos/${tituloId}/modulos`);
+  // Extraer módulos de un título específico
+  extraerModulos(tipoGrado: string, titulo: string): Observable<Modulo[]> {
+    return this.http.post<ExtraerResponse>(`${this.API_URL}/extraer`, {
+      tipo_grado: tipoGrado,
+      titulo: titulo
+    }).pipe(
+      map(response => {
+        if (response.success && response.modulos) {
+          return response.modulos;
+        }
+        return [];
+      })
+    );
   }
 
-  getModuloById(id: string): Observable<Modulo> {
-    return this.http.get<Modulo>(`${this.API_URL}/modulos/${id}`);
-  }
-
-  getRasByModulo(moduloId: string): Observable<RA[]> {
-    return this.http.get<RA[]>(`${this.API_URL}/modulos/${moduloId}/ras`);
-  }
-
-  getRaById(id: string): Observable<RA> {
-    return this.http.get<RA>(`${this.API_URL}/ras/${id}`);
-  }
-
-  getCesByRa(raId: string): Observable<CE[]> {
-    return this.http.get<CE[]>(`${this.API_URL}/ras/${raId}/ces`);
+  // Health check
+  healthCheck(): Observable<any> {
+    return this.http.get(`${this.API_URL}/health`);
   }
 }

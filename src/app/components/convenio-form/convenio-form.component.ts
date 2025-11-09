@@ -17,6 +17,7 @@ export class ConvenioFormComponent implements OnInit {
   modulos: Modulo[] = [];
   loadingTitulos = false;
   loadingModulos = false;
+  tipoGrado: string = 'superior'; // Por defecto superior
 
   constructor(
     private fb: FormBuilder,
@@ -41,8 +42,9 @@ export class ConvenioFormComponent implements OnInit {
         email: ['', [Validators.required, Validators.email]]
       }),
       formacion: this.fb.group({
-        tituloId: ['', Validators.required],
-        moduloId: ['', Validators.required]
+        tipoGrado: ['superior', Validators.required],
+        titulo: ['', Validators.required],
+        modulo: ['', Validators.required]
       })
     });
   }
@@ -50,16 +52,29 @@ export class ConvenioFormComponent implements OnInit {
   ngOnInit() {
     this.loadTitulos();
     
-    this.empresaForm.get('formacion.tituloId')?.valueChanges.subscribe(tituloId => {
-      if (tituloId) {
-        this.loadModulos(tituloId);
+    // Cargar títulos cuando cambia el tipo de grado
+    this.empresaForm.get('formacion.tipoGrado')?.valueChanges.subscribe(tipoGrado => {
+      if (tipoGrado) {
+        this.tipoGrado = tipoGrado;
+        this.loadTitulos();
+        this.modulos = [];
+        this.empresaForm.get('formacion.titulo')?.reset();
+        this.empresaForm.get('formacion.modulo')?.reset();
+      }
+    });
+
+    // Cargar módulos cuando cambia el título
+    this.empresaForm.get('formacion.titulo')?.valueChanges.subscribe(titulo => {
+      if (titulo) {
+        this.loadModulos(titulo);
       }
     });
   }
 
   loadTitulos() {
     this.loadingTitulos = true;
-    this.apiService.getTitulos().subscribe({
+    this.titulos = [];
+    this.apiService.getTitulos(this.tipoGrado).subscribe({
       next: (titulos) => {
         this.titulos = titulos;
         this.loadingTitulos = false;
@@ -71,12 +86,12 @@ export class ConvenioFormComponent implements OnInit {
     });
   }
 
-  loadModulos(tituloId: string) {
+  loadModulos(titulo: string) {
     this.loadingModulos = true;
     this.modulos = [];
-    this.empresaForm.get('formacion.moduloId')?.reset();
+    this.empresaForm.get('formacion.modulo')?.reset();
     
-    this.apiService.getModulosByTitulo(tituloId).subscribe({
+    this.apiService.extraerModulos(this.tipoGrado, titulo).subscribe({
       next: (modulos) => {
         this.modulos = modulos;
         this.loadingModulos = false;
