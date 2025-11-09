@@ -18,7 +18,7 @@ interface NuevoCiclo {
   siglas: string;
   clave: string;
   tipo_grado: string;
-  titulo_id: number | null;
+  titulo_id: number | string | null;
 }
 
 interface Titulo {
@@ -192,7 +192,7 @@ export class AdministracionComponent implements OnInit {
       return;
     }
 
-    if (!this.nuevoCiclo.titulo_id) {
+    if (!this.nuevoCiclo.titulo_id || this.nuevoCiclo.titulo_id === '') {
       alert('Por favor selecciona un título para el ciclo');
       return;
     }
@@ -200,10 +200,16 @@ export class AdministracionComponent implements OnInit {
     this.guardandoCiclo = true;
 
     // Asegurar que titulo_id sea un número válido
-    const tituloIdNumber = Number(this.nuevoCiclo.titulo_id);
+    const tituloIdNumber = parseInt(String(this.nuevoCiclo.titulo_id), 10);
     
-    if (isNaN(tituloIdNumber) || tituloIdNumber === 0) {
-      alert('El título seleccionado no es válido. Por favor selecciona otro.');
+    console.log('=== DEBUG TITULO_ID ===');
+    console.log('nuevoCiclo.titulo_id:', this.nuevoCiclo.titulo_id, typeof this.nuevoCiclo.titulo_id);
+    console.log('tituloIdNumber después de parseInt:', tituloIdNumber, typeof tituloIdNumber);
+    console.log('isNaN:', isNaN(tituloIdNumber));
+    console.log('es mayor que 0:', tituloIdNumber > 0);
+    
+    if (isNaN(tituloIdNumber) || tituloIdNumber <= 0) {
+      alert(`El título seleccionado no es válido (${this.nuevoCiclo.titulo_id}). Por favor selecciona otro.`);
       this.guardandoCiclo = false;
       return;
     }
