@@ -219,6 +219,55 @@ export class ApiService {
   }
 
   // ============================================
+  // CICLOS FORMATIVOS
+  // ============================================
+
+  getCiclosFormativos(): Observable<any[]> {
+    return this.http.get<any>(`${this.API_URL}/practicas/ciclos`).pipe(
+      map(response => {
+        if (response.success && response.ciclos) {
+          return response.ciclos;
+        }
+        return [];
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener ciclos formativos:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getCicloConModulos(cicloId: number): Observable<any> {
+    return this.http.get<any>(`${this.API_URL}/practicas/ciclos/${cicloId}/modulos`).pipe(
+      map(response => {
+        if (response.success) {
+          return {
+            ciclo: response.ciclo,
+            modulos: response.modulos || []
+          };
+        }
+        return { ciclo: null, modulos: [] };
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener ciclo con módulos:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  guardarPFI(pfiData: any): Observable<{ success: boolean; id?: number; error?: string }> {
+    return this.http.post<{ success: boolean; id?: number; error?: string }>(
+      `${this.API_URL}/practicas/pfi`,
+      pfiData
+    ).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al guardar PFI:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // ============================================
   // ALUMNOS
   // ============================================
 

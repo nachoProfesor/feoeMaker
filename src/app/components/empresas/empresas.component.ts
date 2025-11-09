@@ -1,21 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ApiService, Empresa } from '../../services/api.service';
 
 @Component({
   selector: 'app-empresas',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './empresas.component.html',
   styleUrl: './empresas.component.css'
 })
 export class EmpresasComponent implements OnInit {
   empresas: Empresa[] = [];
+  empresasFiltradas: Empresa[] = [];
   loading = true;
   mostrarModal = false;
   guardando = false;
   empresaEditando: Empresa | null = null;
   empresaForm: FormGroup;
+  filtroTexto: string = '';
 
   constructor(
     private apiService: ApiService,
@@ -47,6 +50,7 @@ export class EmpresasComponent implements OnInit {
     this.apiService.getEmpresas().subscribe({
       next: (empresas) => {
         this.empresas = empresas;
+        this.filtrarEmpresas();
         this.loading = false;
       },
       error: (error) => {
@@ -54,6 +58,40 @@ export class EmpresasComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  filtrarEmpresas() {
+    if (!this.filtroTexto || this.filtroTexto.trim() === '') {
+      this.empresasFiltradas = [...this.empresas];
+      return;
+    }
+
+    const textoNormalizado = this.normalizarTexto(this.filtroTexto);
+    
+    this.empresasFiltradas = this.empresas.filter(empresa => {
+      return (
+        this.normalizarTexto(empresa.nombre_empr || '').includes(textoNormalizado) ||
+        this.normalizarTexto(empresa.cif_empr || '').includes(textoNormalizado) ||
+        this.normalizarTexto(empresa.localidad_empr || '').includes(textoNormalizado) ||
+        this.normalizarTexto(empresa.provincia_empr || '').includes(textoNormalizado) ||
+        this.normalizarTexto(empresa.nombre_repr || '').includes(textoNormalizado) ||
+        this.normalizarTexto(empresa.apellidos_repr || '').includes(textoNormalizado) ||
+        this.normalizarTexto(`${empresa.nombre_repr} ${empresa.apellidos_repr}`).includes(textoNormalizado)
+      );
+    });
+  }
+
+  normalizarTexto(texto: string): string {
+    return texto
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  }
+
+  limpiarFiltro() {
+    this.filtroTexto = '';
+    this.filtrarEmpresas();
   }
 
   abrirModal() {

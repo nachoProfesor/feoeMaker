@@ -1,0 +1,165 @@
+<div class="pfi-container">
+  <!-- Header -->
+  <div class="header">
+    <button class="btn-back" (click)="volver()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Volver
+    </button>
+    <div class="header-info">
+      <h1 class="title">Plan de Formación Individual</h1>
+      <p class="subtitle" *ngIf="ciclo">{{ ciclo.nombre }} - {{ ciclo.descripcion }}</p>
+    </div>
+    <button class="btn-primary" (click)="guardarPFI()" [disabled]="guardando">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+      </svg>
+      {{ guardando ? 'Guardando...' : 'Guardar PFI' }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="cargando" class="loading">
+    <p>Cargando módulos del ciclo...</p>
+  </div>
+
+  <!-- Instrucciones -->
+  <div *ngIf="!cargando" class="instrucciones">
+    <div class="instrucciones-card">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <div>
+        <strong>Instrucciones:</strong> Selecciona los módulos que aplican para este curso. Para cada módulo, 
+        distribuye los Resultados de Aprendizaje (RAs) entre el centro educativo y la empresa. 
+        Puedes dividir parcialmente los RAs seleccionando solo algunos Criterios de Evaluación (CEs).
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Módulos -->
+  <div *ngIf="!cargando" class="modulos-section">
+    <div class="modulos-header">
+      <h2>Módulos Profesionales</h2>
+      <div class="stats">
+        <span class="stat-item">
+          <strong>{{ modulosSeleccionados }}</strong> de {{ modulos.length }} módulos seleccionados
+        </span>
+      </div>
+    </div>
+
+    <div class="modulos-list">
+      <div *ngFor="let modulo of modulos; let i = index" class="modulo-card" [class.selected]="modulo.seleccionado">
+        
+        <!-- Header del módulo -->
+        <div class="modulo-header" (click)="toggleModulo(modulo)">
+          <div class="modulo-checkbox">
+            <input type="checkbox" 
+                   [checked]="modulo.seleccionado" 
+                   (click)="$event.stopPropagation()"
+                   (change)="toggleModulo(modulo)">
+          </div>
+          <div class="modulo-info">
+            <div class="modulo-title-row">
+              <h3>{{ modulo.nombre }}</h3>
+              <span class="modulo-codigo">{{ modulo.codigo }}</span>
+              <span class="modulo-horas">{{ modulo.horas }}h</span>
+            </div>
+            <div class="modulo-stats">
+              <span>{{ modulo.num_ras }} RAs</span>
+              <span>{{ modulo.num_ces }} CEs</span>
+            </div>
+          </div>
+          <button class="btn-expand" [class.expanded]="modulo.expandido" (click)="$event.stopPropagation(); toggleExpandir(modulo)">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Contenido expandido: RAs -->
+        <div class="modulo-content" *ngIf="modulo.expandido && modulo.seleccionado">
+          <div class="distribucion-header">
+            <div class="ubicacion-labels">
+              <span class="label-centro">Centro Educativo</span>
+              <span class="label-empresa">Empresa</span>
+            </div>
+          </div>
+
+          <div *ngFor="let ra of modulo.resultados_aprendizaje; let raIndex = index" class="ra-item">
+            <div class="ra-header">
+              <div class="ra-info">
+                <strong>RA{{ raIndex + 1 }}:</strong> {{ ra.descripcion }}
+              </div>
+              <div class="ra-distribucion">
+                <label class="radio-option">
+                  <input type="radio" 
+                         [name]="'ra-' + modulo.codigo + '-' + raIndex"
+                         [value]="'centro'"
+                         [(ngModel)]="ra.ubicacion"
+                         (change)="actualizarDistribucion()">
+                  <span class="radio-label centro">Centro</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" 
+                         [name]="'ra-' + modulo.codigo + '-' + raIndex"
+                         [value]="'empresa'"
+                         [(ngModel)]="ra.ubicacion"
+                         (change)="actualizarDistribucion()">
+                  <span class="radio-label empresa">Empresa</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" 
+                         [name]="'ra-' + modulo.codigo + '-' + raIndex"
+                         [value]="'parcial'"
+                         [(ngModel)]="ra.ubicacion"
+                         (change)="actualizarDistribucion()">
+                  <span class="radio-label parcial">Parcial</span>
+                </label>
+              </div>
+              <button class="btn-toggle-ces" 
+                      *ngIf="ra.ubicacion === 'parcial'"
+                      (click)="toggleCEs(ra)">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- CEs cuando es parcial -->
+            <div class="ces-list" *ngIf="ra.ubicacion === 'parcial' && ra.mostrarCEs">
+              <div class="ces-header">
+                <span>Criterios de Evaluación - Distribuir entre Centro y Empresa:</span>
+              </div>
+              <div *ngFor="let ce of ra.criterios_evaluacion; let ceIndex = index" class="ce-item">
+                <div class="ce-content">
+                  <span class="ce-label">CE{{ raIndex + 1 }}.{{ ceIndex + 1 }}:</span>
+                  <span class="ce-descripcion">{{ ce.descripcion }}</span>
+                </div>
+                <div class="ce-radio-group">
+                  <label class="radio-option-small">
+                    <input type="radio" 
+                           [name]="'ce-' + modulo.codigo + '-' + raIndex + '-' + ceIndex"
+                           [value]="'centro'"
+                           [(ngModel)]="ce.ubicacion"
+                           (change)="actualizarDistribucion()">
+                    <span class="radio-label-small centro">Centro</span>
+                  </label>
+                  <label class="radio-option-small">
+                    <input type="radio" 
+                           [name]="'ce-' + modulo.codigo + '-' + raIndex + '-' + ceIndex"
+                           [value]="'empresa'"
+                           [(ngModel)]="ce.ubicacion"
+                           (change)="actualizarDistribucion()">
+                    <span class="radio-label-small empresa">Empresa</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

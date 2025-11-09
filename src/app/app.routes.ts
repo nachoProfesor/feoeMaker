@@ -6,6 +6,7 @@ import { AdministracionComponent } from './components/administracion/administrac
 import { AlumnosComponent } from './components/alumnos/alumnos.component';
 import { EmpresasComponent } from './components/empresas/empresas.component';
 import { PropuestasComponent } from './components/propuestas/propuestas.component';
+import { PfiEditorComponent } from './components/pfi-editor/pfi-editor.component';
 import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
@@ -18,6 +19,11 @@ export const routes: Routes = [
   { 
     path: 'administracion', 
     component: AdministracionComponent,
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'administracion/pfi/:cicloId', 
+    component: PfiEditorComponent,
     canActivate: [authGuard]
   },
   { 

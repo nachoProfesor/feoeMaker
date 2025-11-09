@@ -11,7 +11,7 @@ import { AuthService, User } from './auth/auth.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'feoeMaker';
+  title = 'Feoe Manager';
   currentUser: User | null = null;
 
   constructor(
