@@ -243,10 +243,28 @@ export class AdministracionComponent implements OnInit {
         this.cargarCiclos();
       },
       error: (error: any) => {
-        console.error('Error al crear ciclo:', error);
+        console.error('=== ERROR COMPLETO ===');
+        console.error('Error objeto completo:', error);
+        console.error('error.error:', error.error);
+        console.error('error.status:', error.status);
+        console.error('error.statusText:', error.statusText);
+        console.error('error.message:', error.message);
+        console.error('=====================');
+        
         this.guardandoCiclo = false;
-        const errorMsg = error.error?.error || error.error?.message || error.message || 'Error desconocido';
-        alert('Error al crear el ciclo: ' + errorMsg);
+        
+        let errorMsg = 'Error desconocido';
+        if (error.error) {
+          if (typeof error.error === 'string') {
+            errorMsg = error.error;
+          } else {
+            errorMsg = error.error.error || error.error.message || JSON.stringify(error.error);
+          }
+        } else if (error.message) {
+          errorMsg = error.message;
+        }
+        
+        alert('Error al crear el ciclo:\n' + errorMsg);
       }
     });
   }
