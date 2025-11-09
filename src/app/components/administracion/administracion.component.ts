@@ -29,9 +29,11 @@ interface NuevoCiclo {
 export class AdministracionComponent implements OnInit {
   mostrarModalCiclo = false;
   mostrarModalCrearCiclo = false;
+  mostrarModalGestionarCiclos = false;
   cargandoCiclos = false;
   guardandoCiclo = false;
   ciclosFormativos: CicloFormativo[] = [];
+  cicloEditando: CicloFormativo | null = null;
   
   nuevoCiclo: NuevoCiclo = {
     nombre: '',
@@ -84,16 +86,55 @@ export class AdministracionComponent implements OnInit {
   abrirModalCrearCiclo() {
     this.mostrarModalCrearCiclo = true;
     this.cerrarModalCiclo();
-  }
-
-  cerrarModalCrearCiclo() {
-    this.mostrarModalCrearCiclo = false;
+    this.cerrarModalGestionarCiclos();
+    this.cicloEditando = null;
     this.nuevoCiclo = {
       nombre: '',
       siglas: '',
       clave: '',
       titulo_id: null
     };
+  }
+
+  cerrarModalCrearCiclo() {
+    this.mostrarModalCrearCiclo = false;
+    this.cicloEditando = null;
+    this.nuevoCiclo = {
+      nombre: '',
+      siglas: '',
+      clave: '',
+      titulo_id: null
+    };
+  }
+
+  abrirModalGestionarCiclos() {
+    this.mostrarModalGestionarCiclos = true;
+    this.cargarCiclos();
+  }
+
+  cerrarModalGestionarCiclos() {
+    this.mostrarModalGestionarCiclos = false;
+  }
+
+  editarCiclo(ciclo: CicloFormativo) {
+    this.cicloEditando = ciclo;
+    this.nuevoCiclo = {
+      nombre: ciclo.nombre,
+      siglas: ciclo.codigo, // Asumiendo que codigo es las siglas
+      clave: ciclo.descripcion, // O ajusta según tu modelo
+      titulo_id: ciclo.titulo_id || null
+    };
+    this.cerrarModalGestionarCiclos();
+    this.mostrarModalCrearCiclo = true;
+  }
+
+  eliminarCiclo(ciclo: CicloFormativo) {
+    if (!confirm(`¿Estás seguro de eliminar el ciclo "${ciclo.nombre}"?`)) {
+      return;
+    }
+
+    // TODO: Implementar eliminación cuando esté el endpoint
+    alert('Funcionalidad de eliminación pendiente de implementar en el backend');
   }
 
   crearCiclo() {
@@ -111,6 +152,14 @@ export class AdministracionComponent implements OnInit {
       titulo_id: this.nuevoCiclo.titulo_id
     };
 
+    if (this.cicloEditando) {
+      // Modo edición - TODO: implementar cuando exista el endpoint PUT
+      alert('Funcionalidad de edición pendiente de implementar en el backend');
+      this.guardandoCiclo = false;
+      return;
+    }
+
+    // Modo creación
     this.apiService.crearCiclo(cicloData).subscribe({
       next: (response: any) => {
         console.log('Ciclo creado:', response);
@@ -128,6 +177,6 @@ export class AdministracionComponent implements OnInit {
   }
 
   gestionarCiclos() {
-    this.abrirModalCrearCiclo();
+    this.abrirModalGestionarCiclos();
   }
 }
