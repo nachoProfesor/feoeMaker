@@ -278,6 +278,11 @@ export class ApiService {
       }),
       catchError((error: HttpErrorResponse) => {
         console.error('Error al obtener PFIs del ciclo:', error);
+        // Si el endpoint no existe (404), devolver array vacío en vez de error
+        if (error.status === 404) {
+          console.warn('Endpoint de PFIs no disponible aún, mostrando lista vacía');
+          return [[]];
+        }
         return throwError(() => error);
       })
     );
