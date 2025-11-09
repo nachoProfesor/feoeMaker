@@ -75,15 +75,16 @@ export class ConvenioFormComponent implements OnInit {
     this.loadingTitulos = true;
     this.titulos = [];
     console.log('Cargando títulos para tipo:', this.tipoGrado);
-    this.apiService.getTitulos(this.tipoGrado).subscribe({
+    this.apiService.getTitulos().subscribe({
       next: (titulos) => {
-        console.log('Títulos recibidos:', titulos);
-        this.titulos = titulos;
+        console.log('Todos los títulos recibidos:', titulos);
+        // Filtrar por tipo_grado en el frontend
+        this.titulos = titulos.filter((t: any) => t.tipo_grado === this.tipoGrado);
+        console.log('Títulos filtrados:', this.titulos);
         this.loadingTitulos = false;
       },
       error: (err) => {
         console.error('Error cargando títulos:', err);
-        console.error('URL:', `${this.tipoGrado}`);
         this.loadingTitulos = false;
       }
     });
