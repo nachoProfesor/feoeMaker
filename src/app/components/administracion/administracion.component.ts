@@ -187,6 +187,11 @@ export class AdministracionComponent implements OnInit {
       return;
     }
 
+    if (!this.nuevoCiclo.titulo_id) {
+      alert('Por favor selecciona un título para el ciclo');
+      return;
+    }
+
     this.guardandoCiclo = true;
 
     const cicloData = {
@@ -215,7 +220,8 @@ export class AdministracionComponent implements OnInit {
       error: (error: any) => {
         console.error('Error al crear ciclo:', error);
         this.guardandoCiclo = false;
-        alert('Error al crear el ciclo: ' + (error.error?.error || error.message));
+        const errorMsg = error.error?.error || error.error?.message || error.message || 'Error desconocido';
+        alert('Error al crear el ciclo: ' + errorMsg);
       }
     });
   }

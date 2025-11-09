@@ -170,7 +170,7 @@
             name="titulo_id"
             [disabled]="!nuevoCiclo.tipo_grado || cargandoTitulos"
             required>
-            <option [value]="null">
+            <option [value]="''">
               {{ cargandoTitulos ? 'Cargando títulos...' : (nuevoCiclo.tipo_grado ? '-- Selecciona un título --' : '-- Primero selecciona el tipo de grado --') }}
             </option>
             <option *ngFor="let titulo of titulosDisponibles" [value]="titulo.id">
@@ -183,7 +183,8 @@
           <button type="button" class="btn-secondary" (click)="cerrarModalCrearCiclo()">
             Cancelar
           </button>
-          <button type="submit" class="btn-primary" [disabled]="guardandoCiclo">
+          <button type="submit" class="btn-primary" 
+            [disabled]="guardandoCiclo || !nuevoCiclo.nombre || !nuevoCiclo.siglas || !nuevoCiclo.clave || !nuevoCiclo.titulo_id">
             {{ guardandoCiclo ? 'Guardando...' : (cicloEditando ? 'Actualizar Ciclo' : 'Crear Ciclo') }}
           </button>
         </div>
