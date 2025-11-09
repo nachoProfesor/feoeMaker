@@ -12,7 +12,7 @@ export const routes: Routes = [
   },
   { 
     path: '', 
-    redirectTo: 'formulario', 
+    redirectTo: 'login', 
     pathMatch: 'full' 
   },
   { path: '**', redirectTo: 'formulario' }

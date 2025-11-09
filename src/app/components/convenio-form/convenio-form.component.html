@@ -1,126 +1,163 @@
-<div class="container mt-4">
-  <h1 class="display-6 text-center mb-4">Generador Anexo X</h1>
-  <form [formGroup]="empresaForm" (ngSubmit)="onSubmit()" class="needs-validation">
+﻿<div class="form-wrapper">
+  <div class="form-header">
+    <h1 class="form-title">Generador Anexo X</h1>
+    <p class="form-subtitle">Complete los datos para generar el documento</p>
+  </div>
+
+  <form [formGroup]="empresaForm" (ngSubmit)="onSubmit()" class="form-content">
     
-    <div class="card bg-dark mb-4">
+    <!-- Datos del Representante -->
+    <div class="form-card">
       <div class="card-header">
-        <h3>Datos del Representante</h3>
+        <h3 class="card-title">Datos del Representante</h3>
       </div>
       <div class="card-body" formGroupName="representante">
-        <div class="row">
-          <div class="col-md-4 mb-3">
+        <div class="form-grid">
+          <div class="form-group">
             <label for="repNombre" class="form-label">Nombre</label>
-            <input id="repNombre" type="text" class="form-control" formControlName="nombre" />
+            <input id="repNombre" type="text" class="form-input" formControlName="nombre" placeholder="Nombre del representante" />
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="form-group">
             <label for="repApellidos" class="form-label">Apellidos</label>
-            <input id="repApellidos" type="text" class="form-control" formControlName="apellidos" />
+            <input id="repApellidos" type="text" class="form-input" formControlName="apellidos" placeholder="Apellidos" />
           </div>
-          <div class="col-md-2 mb-3">
+          <div class="form-group">
             <label for="repDni" class="form-label">DNI</label>
-            <input id="repDni" type="text" class="form-control" formControlName="dni" />
+            <input id="repDni" type="text" class="form-input" formControlName="dni" placeholder="12345678A" />
           </div>
-          <div class="col-md-2 mb-3">
+          <div class="form-group">
             <label for="repCargo" class="form-label">Cargo</label>
-            <input id="repCargo" type="text" class="form-control" formControlName="cargo" />
+            <input id="repCargo" type="text" class="form-input" formControlName="cargo" placeholder="Gerente, Director, etc." />
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card bg-dark mb-4">
+    <!-- Datos de la Empresa -->
+    <div class="form-card">
       <div class="card-header">
-        <h3>Datos de la Empresa</h3>
+        <h3 class="card-title">Datos de la Empresa</h3>
       </div>
       <div class="card-body" formGroupName="empresa">
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="empNombre" class="form-label">Nombre de la empresa</label>
-            <input id="empNombre" type="text" class="form-control" formControlName="nombre">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="empNombre" class="form-label">Nombre de la Empresa</label>
+            <input id="empNombre" type="text" class="form-input" formControlName="nombre" placeholder="Nombre de la empresa" />
           </div>
-          <div class="col-md-6 mb-3">
-            <label for="empCif" class="form-label">CIF / NIF</label>
-            <input id="empCif" type="text" class="form-control" formControlName="cif">
+          <div class="form-group">
+            <label for="empCif" class="form-label">CIF</label>
+            <input id="empCif" type="text" class="form-input" formControlName="cif" placeholder="A12345678" />
           </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-4 mb-3">
+          <div class="form-group">
             <label for="empProvincia" class="form-label">Provincia</label>
-            <input id="empProvincia" type="text" class="form-control" formControlName="provincia">
+            <input id="empProvincia" type="text" class="form-input" formControlName="provincia" placeholder="Provincia" />
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="form-group">
             <label for="empLocalidad" class="form-label">Localidad</label>
-            <input id="empLocalidad" type="text" class="form-control" formControlName="localidad">
+            <input id="empLocalidad" type="text" class="form-input" formControlName="localidad" placeholder="Localidad" />
           </div>
-          <div class="col-md-4 mb-3">
-            <label for="empCP" class="form-label">Código Postal</label>
-            <input id="empCP" type="text" class="form-control" formControlName="codigoPostal">
+          <div class="form-group">
+            <label for="empCalle" class="form-label">Calle</label>
+            <input id="empCalle" type="text" class="form-input" formControlName="calle" placeholder="Dirección completa" />
           </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12 mb-3">
-            <label for="empCalle" class="form-label">Dirección</label>
-            <input id="empCalle" type="text" class="form-control" formControlName="calle">
+          <div class="form-group">
+            <label for="empCp" class="form-label">Código Postal</label>
+            <input id="empCp" type="text" class="form-input" formControlName="cp" placeholder="10600" />
           </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-6 mb-3">
+          <div class="form-group">
             <label for="empTelefono" class="form-label">Teléfono</label>
-            <input id="empTelefono" type="tel" class="form-control" formControlName="telefono">
+            <input id="empTelefono" type="tel" class="form-input" formControlName="telefono" placeholder="927123456" />
           </div>
-          <div class="col-md-6 mb-3">
+          <div class="form-group">
             <label for="empEmail" class="form-label">Email</label>
-            <input id="empEmail" type="email" class="form-control" formControlName="email">
+            <input id="empEmail" type="email" class="form-input" formControlName="email" placeholder="contacto@empresa.com" />
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card bg-dark mb-4">
+    <!-- Datos de la Formación -->
+    <div class="form-card">
       <div class="card-header">
-        <h3>Datos de Formación</h3>
+        <h3 class="card-title">Datos de la Formación</h3>
       </div>
       <div class="card-body" formGroupName="formacion">
-        <div class="row">
-          <div class="col-md-4 mb-3">
+        <div class="form-grid">
+          <div class="form-group">
             <label for="tipoGrado" class="form-label">Tipo de Grado</label>
             <select id="tipoGrado" class="form-select" formControlName="tipoGrado">
-              <option value="superior">Grado Superior</option>
-              <option value="medio">Grado Medio</option>
-              <option value="basico">FP Básica</option>
+              <option value="" disabled>Seleccione tipo de grado</option>
+              <option value="GM">Grado Medio</option>
+              <option value="GS">Grado Superior</option>
             </select>
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="form-group">
             <label for="titulo" class="form-label">Título</label>
-            <select id="titulo" class="form-select" formControlName="titulo">
-              <option value="">Seleccione un título...</option>
-              <option *ngFor="let titulo of titulos" [value]="titulo.nombre">
-                {{ titulo.nombre }}
-              </option>
+            <select id="titulo" class="form-select" formControlName="titulo" [disabled]="titulos.length === 0">
+              <option value="" disabled>{{ titulos.length === 0 ? 'Seleccione primero el tipo de grado' : 'Seleccione título' }}</option>
+              <option *ngFor="let titulo of titulos" [value]="titulo">{{ titulo }}</option>
             </select>
-            <div *ngIf="loadingTitulos" class="text-muted mt-1">Cargando títulos...</div>
           </div>
-          <div class="col-md-4 mb-3">
-            <label for="modulo" class="form-label">Módulo</label>
-            <select id="modulo" class="form-select" formControlName="modulo" [disabled]="!modulos.length">
-              <option value="">Seleccione un módulo...</option>
-              <option *ngFor="let modulo of modulos" [value]="modulo.nombre">
-                {{ modulo.nombre }}
-              </option>
-            </select>
-            <div *ngIf="loadingModulos" class="text-muted mt-1">Cargando módulos...</div>
+          <div class="form-group form-group-full">
+            <label for="modulos" class="form-label">Módulos Profesionales</label>
+            <textarea 
+              id="modulos" 
+              class="form-textarea" 
+              formControlName="modulos" 
+              rows="5"
+              placeholder="Los módulos se cargarán automáticamente al seleccionar el título"
+              readonly
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="curso" class="form-label">Curso Académico</label>
+            <input id="curso" type="text" class="form-input" formControlName="curso" placeholder="2024/2025" />
+          </div>
+          <div class="form-group">
+            <label for="alumnoNombre" class="form-label">Nombre del Alumno</label>
+            <input id="alumnoNombre" type="text" class="form-input" formControlName="alumnoNombre" placeholder="Nombre del alumno" />
+          </div>
+          <div class="form-group">
+            <label for="alumnoApellidos" class="form-label">Apellidos del Alumno</label>
+            <input id="alumnoApellidos" type="text" class="form-input" formControlName="alumnoApellidos" placeholder="Apellidos" />
+          </div>
+          <div class="form-group">
+            <label for="alumnoDni" class="form-label">DNI del Alumno</label>
+            <input id="alumnoDni" type="text" class="form-input" formControlName="alumnoDni" placeholder="12345678A" />
+          </div>
+          <div class="form-group">
+            <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+            <input id="fechaInicio" type="date" class="form-input" formControlName="fechaInicio" />
+          </div>
+          <div class="form-group">
+            <label for="fechaFin" class="form-label">Fecha de Fin</label>
+            <input id="fechaFin" type="date" class="form-input" formControlName="fechaFin" />
+          </div>
+          <div class="form-group">
+            <label for="horas" class="form-label">Horas Totales</label>
+            <input id="horas" type="number" class="form-input" formControlName="horas" placeholder="370" />
+          </div>
+          <div class="form-group">
+            <label for="tutorNombre" class="form-label">Nombre del Tutor</label>
+            <input id="tutorNombre" type="text" class="form-input" formControlName="tutorNombre" placeholder="Nombre del tutor de empresa" />
+          </div>
+          <div class="form-group">
+            <label for="tutorDni" class="form-label">DNI del Tutor</label>
+            <input id="tutorDni" type="text" class="form-input" formControlName="tutorDni" placeholder="12345678A" />
           </div>
         </div>
       </div>
     </div>
 
-    <div class="d-grid gap-2">
-      <button type="submit" class="btn btn-primary btn-lg" [disabled]="!empresaForm.valid">
-        Generar Anexo X (Formato .docx) 📖
+    <!-- Botones de acción -->
+    <div class="form-actions">
+      <button type="submit" class="btn-primary" [disabled]="!empresaForm.valid">
+        Generar Documento
+      </button>
+      <button type="button" class="btn-secondary" (click)="empresaForm.reset()">
+        Limpiar Formulario
       </button>
     </div>
+
   </form>
 </div>
