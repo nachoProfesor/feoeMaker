@@ -166,3 +166,58 @@
       margin-block: 1.5rem;
     }
   }
+
+/* Estilos personalizados para el header y auth */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: #375a7f;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.app-header h2 {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.user-info {
+  color: white;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.user-details {
+  text-align: right;
+}
+
+.user-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.user-email {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .user-details {
+    display: none;
+  }
+}

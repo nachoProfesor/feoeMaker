@@ -1,2 +1,23 @@
-<app-convenio-form></app-convenio-form>
-<router-outlet />
+<div class="app-container">
+  <!-- Header con info de usuario -->
+  <header class="app-header" *ngIf="currentUser">
+    <div class="container d-flex justify-content-between align-items-center">
+      <h2 class="mb-0">Generador Anexo X</h2>
+      <div class="user-info d-flex align-items-center gap-3">
+        <img [src]="currentUser.picture" alt="Avatar" class="user-avatar" *ngIf="currentUser.picture">
+        <div class="user-details">
+          <div class="user-name">{{ currentUser.name }}</div>
+          <div class="user-email">{{ currentUser.email }}</div>
+        </div>
+        <button class="btn btn-sm btn-outline-light" (click)="logout()">
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="main-content">
+    <router-outlet />
+  </main>
+</div>
