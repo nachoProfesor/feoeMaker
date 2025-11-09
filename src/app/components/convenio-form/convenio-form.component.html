@@ -95,7 +95,7 @@
             <label for="titulo" class="form-label">Título</label>
             <select id="titulo" class="form-select" formControlName="titulo" [disabled]="titulos.length === 0">
               <option value="" disabled>{{ titulos.length === 0 ? 'Seleccione primero el tipo de grado' : 'Seleccione título' }}</option>
-              <option *ngFor="let titulo of titulos" [value]="titulo">{{ titulo }}</option>
+              <option *ngFor="let titulo of titulos" [value]="titulo.nombre">{{ titulo.nombre }}</option>
             </select>
           </div>
           <div class="form-group form-group-full">
