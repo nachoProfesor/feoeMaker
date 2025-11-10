@@ -98,6 +98,33 @@ export interface ExtraerResponse {
   modulos: Modulo[];
 }
 
+// Interfaces para PFI
+export interface PFIDetalle {
+  pfi_id?: number;
+  codigo: string;
+  nombre_modulo: string;
+  empresa_o_centro: 'C' | 'E' | 'P'; // C = Centro, E = Empresa, P = Parcial
+  criterio_evaluacion_empresa?: string | null; // Letras de CEs separadas por comas: "a,b,c,f"
+  created_at?: string;
+}
+
+export interface PFI {
+  id?: number;
+  titulo_id: number;
+  ciclo_id: number;
+  codigo_ra: string;
+  tutor_centro_id?: number | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PFIConDetalles {
+  pfi: PFI;
+  detalles: PFIDetalle[];
+  ciclo?: any;
+  titulo?: any;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -327,6 +354,57 @@ export class ApiService {
     ).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error('Error al guardar PFI:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // Obtener todos los PFIs
+  getAllPFIs(): Observable<any[]> {
+    return this.http.get<any>(`${this.API_URL}/practicas/pfi`).pipe(
+      map(response => {
+        console.log('Respuesta getAllPFIs:', response);
+        if (response.success && response.data) {
+          return response.data;
+        }
+        return [];
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener todos los PFIs:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // Obtener un PFI específico con sus detalles
+  getPFIById(pfiId: number): Observable<any> {
+    return this.http.get<any>(`${this.API_URL}/practicas/pfi/${pfiId}`).pipe(
+      map(response => {
+        console.log('Respuesta getPFIById:', response);
+        if (response.success) {
+          return {
+            pfi: response.pfi,
+            detalles: response.detalles || response.detalle || [], // Soportar ambos nombres
+            ciclo: response.ciclo,
+            titulo: response.titulo
+          };
+        }
+        return null;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener PFI por ID:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // Eliminar un PFI
+  eliminarPFI(pfiId: number): Observable<{ success: boolean; message?: string }> {
+    return this.http.delete<{ success: boolean; message?: string }>(
+      `${this.API_URL}/practicas/pfi/${pfiId}`
+    ).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al eliminar PFI:', error);
         return throwError(() => error);
       })
     );

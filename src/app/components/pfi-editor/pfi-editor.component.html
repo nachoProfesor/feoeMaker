@@ -38,6 +38,27 @@
     </div>
   </div>
 
+  <!-- Nombre del PFI -->
+  <div *ngIf="!cargando" class="nombre-pfi-section">
+    <div class="form-group">
+      <label for="nombrePFI">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        </svg>
+        Nombre del PFI
+      </label>
+      <input 
+        id="nombrePFI"
+        type="text" 
+        [(ngModel)]="nombrePFI" 
+        placeholder="Ej: PFI-2025, Plan Formativo DAM 24-25, etc."
+        class="form-control"
+        maxlength="100"
+      />
+      <small class="form-hint">Este nombre identificará el Plan de Formación Individual</small>
+    </div>
+  </div>
+
   <!-- Tabla de Módulos -->
   <div *ngIf="!cargando" class="modulos-section">
     <div class="modulos-header">
@@ -130,11 +151,14 @@
             <!-- CEs cuando es parcial -->
             <div class="ces-list" *ngIf="ra.ubicacion === 'parcial' && ra.mostrarCEs">
               <div class="ces-header">
-                <span>Criterios de Evaluación - Distribuir entre Centro y Empresa:</span>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="margin-right: 8px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Criterios de Evaluación - Los CEs marcados como "Empresa" se guardarán con sus letras (a,b,c...) separadas por comas</span>
               </div>
               <div *ngFor="let ce of ra.criterios_evaluacion; let ceIndex = index" class="ce-item">
                 <div class="ce-content">
-                  <span class="ce-label">CE{{ raIndex + 1 }}.{{ ceIndex + 1 }}:</span>
+                  <span class="ce-label">{{ 'abcdefghijklmnopqrstuvwxyz'[ceIndex] }}):</span>
                   <span class="ce-descripcion">{{ ce.descripcion }}</span>
                 </div>
                 <div class="ce-radio-group">

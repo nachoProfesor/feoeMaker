@@ -43,10 +43,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "feoeMaker:build:production"
+              "buildTarget": "feoeManager:build:production"
             },
             "development": {
-              "buildTarget": "feoeMaker:build:development"
+              "buildTarget": "feoeManager:build:development"
             }
           },
           "defaultConfiguration": "development"

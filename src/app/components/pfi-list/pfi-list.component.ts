@@ -99,10 +99,30 @@ export class PfiListComponent implements OnInit {
   }
 
   eliminarPFI(pfi: PFI): void {
-    if (confirm(`¿Estás seguro de eliminar el PFI "${pfi.codigo_ra}"?`)) {
-      // TODO: Implementar eliminación cuando esté el endpoint
-      alert('Funcionalidad de eliminación pendiente de implementar');
+    if (!confirm(`¿Estás seguro de eliminar el PFI "${pfi.codigo_ra}"?\n\nEsta acción eliminará también todos los detalles asociados y no se puede deshacer.`)) {
+      return;
     }
+
+    this.apiService.eliminarPFI(pfi.id).subscribe({
+      next: (response) => {
+        console.log('PFI eliminado:', response);
+        alert(`PFI "${pfi.codigo_ra}" eliminado correctamente`);
+        // Recargar la lista de PFIs
+        this.cargarPFIs();
+      },
+      error: (error) => {
+        console.error('Error al eliminar PFI:', error);
+        let errorMsg = 'Error al eliminar el PFI';
+        if (error.status === 404) {
+          errorMsg += ': El PFI no existe o ya fue eliminado';
+        } else if (error.status === 0) {
+          errorMsg += ': No se pudo conectar con el servidor';
+        } else if (error.error?.message) {
+          errorMsg += ': ' + error.error.message;
+        }
+        alert(errorMsg);
+      }
+    });
   }
 
   volver(): void {

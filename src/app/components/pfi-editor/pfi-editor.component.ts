@@ -46,6 +46,7 @@ export class PfiEditorComponent implements OnInit {
   esNuevo = true; // true = crear nuevo, false = editar existente
   ciclo: Ciclo | null = null;
   tituloId: number | null = null; // Necesario para guardar el PFI
+  nombrePFI: string = ''; // Nombre personalizado del PFI
   modulos: Modulo[] = [];
   cargando = true;
   guardando = false;
@@ -62,12 +63,107 @@ export class PfiEditorComponent implements OnInit {
       if (params['pfiId']) {
         this.pfiId = +params['pfiId'];
         this.esNuevo = false;
-        // TODO: Cargar datos del PFI existente
-        alert('Modo edición aún no implementado. Necesitas endpoint GET /api/practicas/pfi/{id}');
+        this.cargarPFIExistente();
       } else if (params['cicloId']) {
         this.cicloId = +params['cicloId'];
         this.esNuevo = true;
         this.cargarDatos();
+      }
+    });
+  }
+
+  cargarPFIExistente() {
+    if (!this.pfiId) return;
+    
+    this.cargando = true;
+    console.log('=== CARGANDO PFI EXISTENTE ===');
+    console.log('PFI ID:', this.pfiId);
+
+    this.apiService.getPFIById(this.pfiId).subscribe({
+      next: (response: any) => {
+        console.log('Respuesta GET PFI:', response);
+        
+        const pfi = response.pfi;
+        const detalles = response.detalles;
+        
+        this.cicloId = pfi.ciclo_id;
+        this.tituloId = pfi.titulo_id;
+        this.nombrePFI = pfi.codigo_ra || ''; // Cargar el nombre del PFI
+        
+        // Cargar la estructura de módulos del ciclo
+        this.apiService.getCicloConModulos(this.cicloId).subscribe({
+          next: (data: any) => {
+            this.ciclo = data.ciclo;
+            this.modulos = (data.modulos || []).map((m: Modulo) => ({
+              ...m,
+              seleccionado: false,
+              expandido: false,
+              resultados_aprendizaje: (m.resultados_aprendizaje || []).map(ra => ({
+                ...ra,
+                ubicacion: 'centro',
+                mostrarCEs: false,
+                criterios_evaluacion: (ra.criterios_evaluacion || []).map(ce => ({
+                  ...ce,
+                  ubicacion: 'centro'
+                }))
+              }))
+            }));
+            
+            // Aplicar los datos guardados del PFI
+            detalles.forEach((detalle: any) => {
+              const [codigoModulo, raNumStr] = detalle.codigo.split('-RA');
+              const raNum = parseInt(raNumStr);
+              
+              const modulo = this.modulos.find(m => m.codigo === codigoModulo);
+              if (modulo) {
+                modulo.seleccionado = true;
+                modulo.expandido = true;
+                
+                const ra = modulo.resultados_aprendizaje[raNum - 1];
+                if (ra) {
+                  if (detalle.empresa_o_centro === 'C') {
+                    ra.ubicacion = 'centro';
+                  } else if (detalle.empresa_o_centro === 'E') {
+                    ra.ubicacion = 'empresa';
+                  } else if (detalle.empresa_o_centro === 'P') {
+                    ra.ubicacion = 'parcial';
+                    ra.mostrarCEs = true;
+                    
+                    // Parsear criterio_evaluacion_empresa: "a,b,f"
+                    if (detalle.criterio_evaluacion_empresa) {
+                      const letrasEmpresa = detalle.criterio_evaluacion_empresa.split(',').map((l: string) => l.trim());
+                      const letras = 'abcdefghijklmnopqrstuvwxyz';
+                      
+                      ra.criterios_evaluacion.forEach((ce, ceIndex) => {
+                        const letra = letras[ceIndex];
+                        if (letrasEmpresa.includes(letra)) {
+                          ce.ubicacion = 'empresa';
+                        } else {
+                          ce.ubicacion = 'centro';
+                        }
+                      });
+                    }
+                  }
+                }
+              }
+            });
+            
+            console.log('PFI cargado y aplicado a módulos');
+            this.cargando = false;
+          },
+          error: (error: any) => {
+            console.error('Error al cargar estructura del ciclo:', error);
+            alert('Error al cargar la estructura del ciclo');
+            this.cargando = false;
+            this.volver();
+          }
+        });
+      },
+      error: (error: any) => {
+        console.error('Error al cargar PFI:', error);
+        alert('Error al cargar el PFI. Verifica que el endpoint GET /api/practicas/pfi/' + this.pfiId + ' esté implementado.');
+        this.cargando = false;
+        this.volver();
       }
     });
   }
@@ -162,6 +258,11 @@ export class PfiEditorComponent implements OnInit {
       return;
     }
 
+    if (!this.nombrePFI || this.nombrePFI.trim() === '') {
+      alert('Por favor, ingresa un nombre para el PFI');
+      return;
+    }
+
     this.guardando = true;
 
     // Construir los módulos en el formato esperado por el backend
@@ -176,17 +277,24 @@ export class PfiEditorComponent implements OnInit {
             modulos.push({
               codigo: `${m.codigo}-RA${raIndex + 1}`,
               nombre: m.nombre,
-              empresa_o_centro: ra.ubicacion === 'centro' ? 'C' : 'E'
+              empresa_o_centro: ra.ubicacion === 'centro' ? 'C' : 'E',
+              criterio_evaluacion_empresa: null // No aplica cuando es completo
             });
           }
-          // Si es 'parcial', crear registros individuales por CE
+          // Si es 'parcial', crear UN SOLO registro con los CEs de empresa separados por comas
           else if (ra.ubicacion === 'parcial') {
-            ra.criterios_evaluacion.forEach((ce, ceIndex) => {
-              modulos.push({
-                codigo: `${m.codigo}-RA${raIndex + 1}-CE${ceIndex + 1}`,
-                nombre: `${m.nombre} - RA${raIndex + 1} - CE${ceIndex + 1}`,
-                empresa_o_centro: ce.ubicacion === 'centro' ? 'C' : 'E'
-              });
+            // Recopilar las letras de los CEs que van a la empresa (a, b, c, etc.)
+            const letras = 'abcdefghijklmnopqrstuvwxyz';
+            const cesEmpresa = ra.criterios_evaluacion
+              .map((ce, ceIndex) => ce.ubicacion === 'empresa' ? letras[ceIndex] : null)
+              .filter(ce => ce !== null);
+            
+            // Crear un único registro para el RA parcial
+            modulos.push({
+              codigo: `${m.codigo}-RA${raIndex + 1}`,
+              nombre: m.nombre,
+              empresa_o_centro: 'P', // 'P' para Parcial
+              criterio_evaluacion_empresa: cesEmpresa.length > 0 ? cesEmpresa.join(',') : null
             });
           }
         });
@@ -195,7 +303,7 @@ export class PfiEditorComponent implements OnInit {
     const pfiData = {
       titulo_id: this.tituloId,
       ciclo_id: this.cicloId,
-      codigo_ra: `${this.ciclo?.codigo || 'PFI'}-${new Date().getFullYear()}`,
+      codigo_ra: this.nombrePFI.trim(),
       tutor_centro_id: null, // Puedes agregar un selector de tutor si lo necesitas
       modulos: modulos
     };

@@ -328,4 +328,103 @@ export class AdministracionComponent implements OnInit {
   gestionarCiclos() {
     this.abrirModalGestionarCiclos();
   }
+
+  // ============================================
+  // MÉTODOS DE PRUEBA PARA PFI
+  // ============================================
+
+  probarGetAllPFIs() {
+    console.log('=== PROBANDO GET ALL PFIs ===');
+    this.apiService.getAllPFIs().subscribe({
+      next: (pfis) => {
+        console.log('✅ Todos los PFIs:', pfis);
+        console.log(`Total de PFIs: ${pfis.length}`);
+        alert(`✅ Se encontraron ${pfis.length} PFIs. Revisa la consola para ver los detalles.`);
+      },
+      error: (error) => {
+        console.error('❌ Error al obtener PFIs:', error);
+        alert('❌ Error al obtener PFIs. Revisa la consola para más detalles.');
+      }
+    });
+  }
+
+  probarGetPFIById(pfiId: number) {
+    console.log(`=== PROBANDO GET PFI BY ID: ${pfiId} ===`);
+    this.apiService.getPFIById(pfiId).subscribe({
+      next: (resultado) => {
+        console.log('✅ PFI obtenido:', resultado);
+        console.log('📋 PFI:', resultado.pfi);
+        console.log('📝 Detalles:', resultado.detalles);
+        console.log(`   Total de detalles: ${resultado.detalles?.length || 0}`);
+        console.log('🎓 Ciclo:', resultado.ciclo);
+        console.log('📜 Título:', resultado.titulo);
+        
+        let mensaje = `✅ PFI ${pfiId} obtenido correctamente\n\n`;
+        mensaje += `📋 Información del PFI:\n`;
+        mensaje += `  - ID: ${resultado.pfi?.id}\n`;
+        mensaje += `  - Código RA: ${resultado.pfi?.codigo_ra}\n`;
+        mensaje += `  - Ciclo ID: ${resultado.pfi?.ciclo_id}\n`;
+        mensaje += `  - Título ID: ${resultado.pfi?.titulo_id}\n\n`;
+        mensaje += `📝 Detalles asociados: ${resultado.detalles?.length || 0}\n\n`;
+        
+        if (resultado.detalles && resultado.detalles.length > 0) {
+          mensaje += `Primeros 3 detalles:\n`;
+          resultado.detalles.slice(0, 3).forEach((detalle: any, index: number) => {
+            const ubicacion = detalle.empresa_o_centro === 'C' ? 'Centro' : 
+                            detalle.empresa_o_centro === 'E' ? 'Empresa' : 
+                            detalle.empresa_o_centro === 'P' ? 'Parcial' : detalle.empresa_o_centro;
+            mensaje += `  ${index + 1}. ${detalle.codigo} - ${detalle.nombre_modulo} (${ubicacion})`;
+            if (detalle.empresa_o_centro === 'P' && detalle.criterio_evaluacion_empresa) {
+              mensaje += `\n     CEs en empresa: ${detalle.criterio_evaluacion_empresa}`;
+            }
+            mensaje += `\n`;
+          });
+          if (resultado.detalles.length > 3) {
+            mensaje += `  ... y ${resultado.detalles.length - 3} más\n`;
+          }
+          
+          // Estadísticas de distribución
+          const totales = {
+            centro: resultado.detalles.filter((d: any) => d.empresa_o_centro === 'C').length,
+            empresa: resultado.detalles.filter((d: any) => d.empresa_o_centro === 'E').length,
+            parcial: resultado.detalles.filter((d: any) => d.empresa_o_centro === 'P').length
+          };
+          mensaje += `\n📊 Distribución:\n`;
+          mensaje += `  - Centro: ${totales.centro}\n`;
+          mensaje += `  - Empresa: ${totales.empresa}\n`;
+          mensaje += `  - Parcial: ${totales.parcial}\n`;
+        }
+        
+        mensaje += `\n🔍 Revisa la consola para ver toda la información detallada.`;
+        
+        alert(mensaje);
+      },
+      error: (error) => {
+        console.error(`❌ Error al obtener PFI ${pfiId}:`, error);
+        alert(`❌ Error al obtener PFI ${pfiId}. Revisa la consola para más detalles.`);
+      }
+    });
+  }
+
+  // Método auxiliar para probar con el primer PFI disponible
+  probarPrimerPFI() {
+    console.log('=== OBTENIENDO PRIMER PFI DISPONIBLE ===');
+    this.apiService.getAllPFIs().subscribe({
+      next: (pfis) => {
+        if (pfis.length === 0) {
+          console.warn('⚠️ No hay PFIs disponibles para probar');
+          alert('⚠️ No hay PFIs disponibles. Crea uno primero.');
+          return;
+        }
+        const primerPFI = pfis[0];
+        console.log('Primer PFI encontrado:', primerPFI);
+        console.log(`ID del primer PFI: ${primerPFI.id}`);
+        this.probarGetPFIById(primerPFI.id);
+      },
+      error: (error) => {
+        console.error('❌ Error al obtener lista de PFIs:', error);
+        alert('❌ Error al obtener lista de PFIs. Revisa la consola.');
+      }
+    });
+  }
 }
