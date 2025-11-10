@@ -257,6 +257,42 @@ export class ApiService {
     );
   }
 
+  actualizarCiclo(cicloId: number, ciclo: any): Observable<{ success: boolean; error?: string }> {
+    console.log('=== API SERVICE: actualizarCiclo ===');
+    console.log('URL:', `${this.API_URL}/practicas/ciclos/${cicloId}`);
+    console.log('Datos a enviar:', ciclo);
+    console.log('====================================');
+    
+    return this.http.put<{ success: boolean; error?: string }>(
+      `${this.API_URL}/practicas/ciclos/${cicloId}`,
+      ciclo
+    ).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('=== ERROR AL ACTUALIZAR CICLO ===');
+        console.error('Error completo:', error);
+        console.error('=================================');
+        return throwError(() => error);
+      })
+    );
+  }
+
+  eliminarCiclo(cicloId: number): Observable<{ success: boolean; error?: string }> {
+    console.log('=== API SERVICE: eliminarCiclo ===');
+    console.log('URL:', `${this.API_URL}/practicas/ciclos/${cicloId}`);
+    console.log('==================================');
+    
+    return this.http.delete<{ success: boolean; error?: string }>(
+      `${this.API_URL}/practicas/ciclos/${cicloId}`
+    ).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('=== ERROR AL ELIMINAR CICLO ===');
+        console.error('Error completo:', error);
+        console.error('================================');
+        return throwError(() => error);
+      })
+    );
+  }
+
   getCicloConModulos(cicloId: number): Observable<any> {
     return this.http.get<any>(`${this.API_URL}/practicas/ciclos/${cicloId}/modulos`).pipe(
       map(response => {

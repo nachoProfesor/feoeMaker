@@ -11,6 +11,8 @@ interface CicloFormativo {
   descripcion: string;
   tipo_grado: string;
   titulo_id?: number;
+  siglas?: string;
+  clave?: string;
 }
 
 interface NuevoCiclo {
@@ -166,8 +168,8 @@ export class AdministracionComponent implements OnInit {
     this.cicloEditando = ciclo;
     this.nuevoCiclo = {
       nombre: ciclo.nombre,
-      siglas: ciclo.codigo, // Asumiendo que codigo es las siglas
-      clave: ciclo.descripcion, // O ajusta según tu modelo
+      siglas: ciclo.siglas || ciclo.codigo || '',
+      clave: ciclo.clave || '',
       tipo_grado: ciclo.tipo_grado || '',
       titulo_id: ciclo.titulo_id || null
     };
@@ -180,12 +182,29 @@ export class AdministracionComponent implements OnInit {
   }
 
   eliminarCiclo(ciclo: CicloFormativo) {
-    if (!confirm(`¿Estás seguro de eliminar el ciclo "${ciclo.nombre}"?`)) {
+    if (!confirm(`¿Estás seguro de eliminar el ciclo "${ciclo.nombre}"?\n\nEsta acción eliminará también todos los PFIs asociados y no se puede deshacer.`)) {
       return;
     }
 
-    // TODO: Implementar eliminación cuando esté el endpoint
-    alert('Funcionalidad de eliminación pendiente de implementar en el backend');
+    this.apiService.eliminarCiclo(ciclo.id).subscribe({
+      next: (response: any) => {
+        console.log('Ciclo eliminado:', response);
+        alert('Ciclo formativo eliminado correctamente');
+        this.cargarCiclos(); // Recargar la lista
+      },
+      error: (error: any) => {
+        console.error('Error al eliminar ciclo:', error);
+        let errorMsg = 'Error al eliminar el ciclo';
+        if (error.error) {
+          if (typeof error.error === 'string') {
+            errorMsg += ': ' + error.error;
+          } else {
+            errorMsg += ': ' + (error.error.error || error.error.message || JSON.stringify(error.error));
+          }
+        }
+        alert(errorMsg);
+      }
+    });
   }
 
   crearCiclo() {
@@ -221,15 +240,52 @@ export class AdministracionComponent implements OnInit {
 
     console.log('=== DATOS A ENVIAR ===');
     console.log('Datos del ciclo a enviar:', cicloData);
-    console.log('nuevoCiclo.titulo_id original:', this.nuevoCiclo.titulo_id, typeof this.nuevoCiclo.titulo_id);
-    console.log('titulo_id final:', cicloData.titulo_id, typeof cicloData.titulo_id);
+    console.log('nuevoCiclo.titulo_id:', this.nuevoCiclo.titulo_id, typeof this.nuevoCiclo.titulo_id);
+    console.log('tituloIdNumber:', tituloIdNumber, typeof tituloIdNumber);
+    console.log('isNaN:', isNaN(tituloIdNumber));
+    console.log('es mayor que 0:', tituloIdNumber > 0);
+    
+    // Verificar que el titulo_id existe en la lista de títulos disponibles
+    const tituloSeleccionado = this.titulosDisponibles.find((t: any) => t.id === tituloIdNumber);
+    console.log('Título seleccionado:', tituloSeleccionado);
     console.log('Títulos disponibles:', this.titulosDisponibles);
     console.log('=====================');
+    
+    if (!tituloSeleccionado) {
+      alert(`Error: El título con ID ${tituloIdNumber} no se encontró en la lista de títulos disponibles. Esto puede indicar un problema con los datos del backend.`);
+      this.guardandoCiclo = false;
+      return;
+    }
 
     if (this.cicloEditando) {
-      // Modo edición - TODO: implementar cuando exista el endpoint PUT
-      alert('Funcionalidad de edición pendiente de implementar en el backend');
-      this.guardandoCiclo = false;
+      // Modo edición
+      console.log('=== MODO EDICIÓN ===');
+      console.log('Actualizando ciclo ID:', this.cicloEditando.id);
+      
+      this.apiService.actualizarCiclo(this.cicloEditando.id, cicloData).subscribe({
+        next: (response: any) => {
+          console.log('Ciclo actualizado:', response);
+          this.guardandoCiclo = false;
+          alert('Ciclo formativo actualizado correctamente');
+          this.cerrarModalCrearCiclo();
+          this.cargarCiclos();
+        },
+        error: (error: any) => {
+          console.error('=== ERROR AL ACTUALIZAR ===');
+          console.error('Error completo:', error);
+          this.guardandoCiclo = false;
+          
+          let errorMsg = 'Error al actualizar el ciclo';
+          if (error.error) {
+            if (typeof error.error === 'string') {
+              errorMsg += ': ' + error.error;
+            } else {
+              errorMsg += ': ' + (error.error.error || error.error.message || JSON.stringify(error.error));
+            }
+          }
+          alert(errorMsg);
+        }
+      });
       return;
     }
 
