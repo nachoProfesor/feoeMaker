@@ -1,6 +1,8 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
+import { Subscription } from 'rxjs';
+import { AuthService, User } from '../../auth/auth.service';
 
 Chart.register(...registerables);
 
@@ -10,7 +12,7 @@ Chart.register(...registerables);
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit, AfterViewInit {
+export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('alumnosChart') alumnosChartRef!: ElementRef;
   @ViewChild('conveniosChart') conveniosChartRef!: ElementRef;
 
@@ -36,14 +38,29 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   private alumnosChart: any;
   private conveniosChart: any;
+  // Usuario autenticado
+  public userName = '';
+  private userSub?: Subscription;
+
+  constructor(private auth: AuthService) {}
 
   ngOnInit(): void {
     // Inicialización de datos
+    // Suscribirse al usuario autenticado para mostrar nombre de bienvenida
+    this.userSub = this.auth.currentUser.subscribe((u: User | null) => {
+      this.userName = u?.name ?? '';
+    });
   }
 
   ngAfterViewInit(): void {
     this.createAlumnosChart();
     this.createConveniosChart();
+  }
+
+  ngOnDestroy(): void {
+    if (this.userSub) {
+      this.userSub.unsubscribe();
+    }
   }
 
   private isDarkMode(): boolean {
