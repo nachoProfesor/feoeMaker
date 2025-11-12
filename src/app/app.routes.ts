@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
-import { ConvenioFormComponent } from './components/convenio-form/convenio-form.component';
+// ConvenioFormComponent removed: menu and route deleted
 import { ConvenioDetailComponent } from './components/convenio-detail/convenio-detail.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AdministracionComponent } from './components/administracion/administracion.component';
@@ -53,11 +53,7 @@ export const routes: Routes = [
     component: PropuestasComponent,
     canActivate: [authGuard]
   },
-  { 
-    path: 'formulario', 
-    component: ConvenioFormComponent,
-    canActivate: [authGuard]
-  },
+  // 'formulario' route removed (ConvenioFormComponent deleted)
   { 
     path: 'convenio/:id',
     component: ConvenioDetailComponent,
