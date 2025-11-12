@@ -1,0 +1,12 @@
+.generador-container {
+  padding: 24px;
+}
+.generador-header h1 {
+  margin: 0 0 8px 0;
+}
+.generador-body {
+  margin-top: 16px;
+}
+.generador-actions button {
+  margin-right: 8px;
+}

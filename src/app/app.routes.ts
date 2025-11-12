@@ -9,6 +9,7 @@ import { EmpresasComponent } from './components/empresas/empresas.component';
 import { PropuestasComponent } from './components/propuestas/propuestas.component';
 import { PfiEditorComponent } from './components/pfi-editor/pfi-editor.component';
 import { PfiListComponent } from './components/pfi-list/pfi-list.component';
+import { GeneradorAnexoVIComponent } from './components/generador-anexo-vi/generador-anexo-vi.component';
 import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
@@ -51,6 +52,11 @@ export const routes: Routes = [
   { 
     path: 'propuestas', 
     component: PropuestasComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'generador-anexo-vi',
+    component: GeneradorAnexoVIComponent,
     canActivate: [authGuard]
   },
   // 'formulario' route removed (ConvenioFormComponent deleted)

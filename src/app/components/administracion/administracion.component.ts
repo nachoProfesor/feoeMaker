@@ -427,4 +427,9 @@ export class AdministracionComponent implements OnInit {
       }
     });
   }
+
+  // Navegar al generador de Anexo VI
+  irGeneradorAnexoVI() {
+    this.router.navigate(['/generador-anexo-vi']);
+  }
 }
