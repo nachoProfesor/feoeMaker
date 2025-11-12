@@ -15,6 +15,7 @@ declare global {
 })
 export class LoginComponent implements AfterViewInit, OnDestroy {
   private clientId = '516221880647-jnaelj0glcuqs5uc8b5q819p84ik0rr7.apps.googleusercontent.com';
+  loading = false;
 
   constructor(
     private authService: AuthService,
@@ -63,13 +64,16 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     }
 
     // Verify token and sign in via AuthService
+    this.loading = true;
     this.authService.handleGoogleIdToken(idToken).subscribe({
       next: (user) => {
-        console.log('Login exitoso:', user);
+        console.log(new Date().toISOString(), 'Login exitoso:', user);
+        this.loading = false;
         this.router.navigate(['/inicio']);
       },
       error: (err) => {
-        console.error('Error verificando Google ID token:', err);
+        console.error(new Date().toISOString(), 'Error verificando Google ID token:', err);
+        this.loading = false;
       }
     });
   }

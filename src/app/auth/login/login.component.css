@@ -15,6 +15,7 @@
   width: 100%;
   overflow: hidden;
   border: 1px solid var(--border-color);
+  position: relative; /* allow overlay */
 }
 
 .login-header {
@@ -111,4 +112,46 @@
   .login-body {
     padding: 30px 20px;
   }
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15,23,42,0.35);
+  backdrop-filter: blur(2px);
+  border-radius: inherit;
+  z-index: 30;
+}
+
+.loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 22px;
+  background: linear-gradient(180deg,#fff,#fbfbff);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.12);
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid rgba(99,102,241,0.18);
+  border-top-color: #4f46e5;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

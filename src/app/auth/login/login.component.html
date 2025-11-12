@@ -9,6 +9,14 @@
       <!-- Google Sign-In button will be rendered here by Google Identity Services -->
       <div id="g_id_signin"></div>
 
+      <!-- Loading overlay shown while authenticating -->
+      <div class="loading-overlay" *ngIf="loading">
+        <div class="loading-box">
+          <div class="spinner" aria-hidden="true"></div>
+          <div class="loading-text">Autenticando...</div>
+        </div>
+      </div>
+
       <div class="info-text">
         <small>Al iniciar sesión, aceptas nuestros términos de servicio y política de privacidad.</small>
       </div>
