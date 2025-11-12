@@ -5,10 +5,42 @@
   </div>
 
   <div class="generador-body">
-    <p>Por ahora este generador es un placeholder. Implementa la lógica de generación según las especificaciones.</p>
+    <p>Selecciona alumno, empresa, ciclo y PFI para generar el Anexo VI.</p>
+
+    <div class="form-row">
+      <label>Alumno</label>
+      <select [(ngModel)]="selectedAlumnoId">
+        <option [ngValue]="null">-- Selecciona alumno --</option>
+        <option *ngFor="let a of alumnos" [ngValue]="a.id">{{ a.nombre }} {{ a.apellidos }}</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Empresa</label>
+      <select [(ngModel)]="selectedEmpresaId">
+        <option [ngValue]="null">-- Selecciona empresa --</option>
+        <option *ngFor="let e of empresas" [ngValue]="e.id">{{ e.nombre_empr }}</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Ciclo</label>
+      <select [(ngModel)]="selectedCicloId" (change)="onCicloChange()">
+        <option [ngValue]="null">-- Selecciona ciclo --</option>
+        <option *ngFor="let c of ciclos" [ngValue]="c.id">{{ c.nombre }}</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>PFI</label>
+      <select [(ngModel)]="selectedPfiId">
+        <option [ngValue]="null">-- Selecciona PFI --</option>
+        <option *ngFor="let p of pfis" [ngValue]="p.id">{{ p.codigo_ra }}</option>
+      </select>
+    </div>
 
     <div class="generador-actions">
-      <button class="btn-primary" (click)="generar()">Generar Anexo VI</button>
+      <button class="btn-primary" (click)="generar()" [disabled]="!canGenerate()">Generar Anexo VI</button>
       <button class="btn-secondary" (click)="volver()">Volver</button>
     </div>
   </div>

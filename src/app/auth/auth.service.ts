@@ -45,21 +45,41 @@ export class AuthService {
    * Verifica el token con el endpoint de Google y devuelve el usuario.
    */
   handleGoogleIdToken(idToken: string) {
-    // Verificar token con Google (tokeninfo)
-    const url = `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`;
-    return this.http.get<any>(url).pipe(
-      map(info => {
-        const user: User = {
-          id: info.sub,
-          email: info.email,
-          name: info.name || info.email || '',
-          picture: info.picture || ''
-        };
-        return user;
+    // Enviar el id_token al backend para verificación y creación de sesión
+    // El backend debe exponer POST /api/auth/google que reciba { id_token }
+    // Respuesta esperada (ejemplo): { access_token, token_type, expires_in, user }
+    const url = 'https://scraping-curriculos-1.onrender.com/api/auth/google';
+    return this.http.post<any>(url, { id_token: idToken }).pipe(
+      map(res => {
+        // Si el backend devuelve un access_token, lo guardamos (localStorage)
+        if (res?.access_token) {
+          try {
+            localStorage.setItem('access_token', res.access_token);
+          } catch (e) {
+            // ignore storage errors
+          }
+        }
+
+        // Normalizar usuario
+        const u = res?.user ?? null;
+        if (u) {
+          const user: User = {
+            id: String(u.id ?? u.google_sub ?? ''),
+            email: u.email ?? '',
+            name: u.name ?? u.email ?? '',
+            picture: u.picture ?? ''
+          };
+          return user;
+        }
+
+        // Si el backend usa cookie HttpOnly y solo devuelve 200 sin token/user,
+        // el frontend puede solicitar /api/me para obtener el usuario; aquí
+        // devolvemos null para que el subscriber gestione el caso.
+        throw new Error('Invalid response from auth backend');
       }),
       tap(user => this.saveUser(user)),
       catchError(err => {
-        console.error('Error verificando id_token en Google:', err);
+        console.error('Error verificando id_token en backend:', err);
         throw err;
       })
     );

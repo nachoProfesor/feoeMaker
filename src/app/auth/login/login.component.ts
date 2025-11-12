@@ -14,7 +14,7 @@ declare global {
   styleUrl: './login.component.css'
 })
 export class LoginComponent implements AfterViewInit, OnDestroy {
-  private clientId = 'REPLACE_WITH_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+  private clientId = '516221880647-jnaelj0glcuqs5uc8b5q819p84ik0rr7.apps.googleusercontent.com';
 
   constructor(
     private authService: AuthService,
