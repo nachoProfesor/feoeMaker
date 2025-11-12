@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
 export interface User {
@@ -25,6 +26,11 @@ export class AuthService {
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
+  private saveUser(user: User) {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    this.currentUserSubject.next(user);
+  }
+
   public get currentUserValue(): User | null {
     return this.currentUserSubject.value;
   }
@@ -34,21 +40,29 @@ export class AuthService {
   }
 
   // TODO: Implementar login real con Google OAuth
-  loginWithGoogle(): Observable<User> {
-    console.log('Login con Google - Por implementar');
-    
-    // Simulación temporal para pruebas de UI
-    const mockUser: User = {
-      id: '123',
-      email: 'usuario@ejemplo.com',
-      name: 'Usuario Demo',
-      picture: 'https://via.placeholder.com/150'
-    };
-    
-    localStorage.setItem('currentUser', JSON.stringify(mockUser));
-    this.currentUserSubject.next(mockUser);
-    
-    return of(mockUser);
+  /**
+   * Procesa un ID token recibido desde Google Identity Services.
+   * Verifica el token con el endpoint de Google y devuelve el usuario.
+   */
+  handleGoogleIdToken(idToken: string) {
+    // Verificar token con Google (tokeninfo)
+    const url = `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`;
+    return this.http.get<any>(url).pipe(
+      map(info => {
+        const user: User = {
+          id: info.sub,
+          email: info.email,
+          name: info.name || info.email || '',
+          picture: info.picture || ''
+        };
+        return user;
+      }),
+      tap(user => this.saveUser(user)),
+      catchError(err => {
+        console.error('Error verificando id_token en Google:', err);
+        throw err;
+      })
+    );
   }
 
   // TODO: Implementar logout real
