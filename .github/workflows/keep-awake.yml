@@ -1,0 +1,34 @@
+name: Keep Render Awake
+
+on:
+  schedule:
+    # every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping app to keep awake
+        env:
+          # Set KEEP_AWAKE_URL as a repository secret for flexibility; fallback to the public URL below
+          DEFAULT_URL: https://scraping-curriculos-1.onrender.com/
+          TARGET_URL: ${{ secrets.KEEP_AWAKE_URL }}
+        run: |
+          URL=${TARGET_URL:-${DEFAULT_URL}}
+          echo "Pinging $URL to keep service awake"
+          # Try a few times to avoid failing the job on transient network errors
+          set -o pipefail
+          for i in 1 2 3; do
+            if curl -sSf --max-time 10 "$URL" >/dev/null; then
+              echo "Success"
+              exit 0
+            else
+              echo "Attempt $i failed"
+              sleep 5
+            fi
+          done
+          echo "All attempts failed (non-fatal)" >&2
+          # exit 0 so workflow doesn't spam failures; if you prefer failures remove the next line
+          exit 0
