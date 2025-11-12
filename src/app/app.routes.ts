@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { ConvenioFormComponent } from './components/convenio-form/convenio-form.component';
+import { ConvenioDetailComponent } from './components/convenio-detail/convenio-detail.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AdministracionComponent } from './components/administracion/administracion.component';
 import { AlumnosComponent } from './components/alumnos/alumnos.component';
@@ -55,6 +56,11 @@ export const routes: Routes = [
   { 
     path: 'formulario', 
     component: ConvenioFormComponent,
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'convenio/:id',
+    component: ConvenioDetailComponent,
     canActivate: [authGuard]
   },
   { 

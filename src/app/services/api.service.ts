@@ -199,6 +199,21 @@ export class ApiService {
     );
   }
 
+  getEmpresaById(id: number): Observable<Empresa | null> {
+    return this.http.get<{ success: boolean; empresa?: Empresa }>(`${this.API_URL}/practicas/empresas/${id}`).pipe(
+      map(response => {
+        if (response.success && response.empresa) {
+          return response.empresa;
+        }
+        return null;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener empresa por ID:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   crearEmpresa(empresa: Empresa): Observable<{ success: boolean; id?: number; error?: string }> {
     console.log('ApiService - Enviando empresa:', empresa);
     console.log('ApiService - URL:', `${this.API_URL}/practicas/empresas`);
@@ -239,6 +254,78 @@ export class ApiService {
     ).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error('Error al eliminar empresa:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // ============================================
+  // ALUMNOS
+  // ============================================
+
+  getAlumnos(): Observable<Alumno[]> {
+    return this.http.get<AlumnosResponse>(`${this.API_URL}/practicas/alumnos`).pipe(
+      map(response => {
+        if (response.success && response.alumnos) {
+          return response.alumnos;
+        }
+        return [];
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener alumnos:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  crearAlumno(alumno: Alumno): Observable<{ success: boolean; id?: number; error?: string }> {
+    return this.http.post<{ success: boolean; id?: number; error?: string }>(
+      `${this.API_URL}/practicas/alumnos`,
+      alumno,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    ).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al crear alumno:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getAlumnoById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.API_URL}/practicas/alumnos/${id}`).pipe(
+      map(response => {
+        if (response.success) {
+          return response.alumno || response.data || null;
+        }
+        return null;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener alumno por ID:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  actualizarAlumno(id: number, alumno: Alumno): Observable<{ success: boolean; error?: string }> {
+    return this.http.put<{ success: boolean; error?: string }>(
+      `${this.API_URL}/practicas/alumnos/${id}`,
+      alumno
+    ).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al actualizar alumno:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  eliminarAlumno(id: number): Observable<{ success: boolean; error?: string }> {
+    return this.http.delete<{ success: boolean; error?: string }>(`${this.API_URL}/practicas/alumnos/${id}`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al eliminar alumno:', error);
         return throwError(() => error);
       })
     );
@@ -433,31 +520,5 @@ export class ApiService {
   // ============================================
   // ALUMNOS
   // ============================================
-
-  getAlumnos(): Observable<Alumno[]> {
-    return this.http.get<AlumnosResponse>(`${this.API_URL}/practicas/alumnos`).pipe(
-      map(response => {
-        if (response.success && response.alumnos) {
-          return response.alumnos;
-        }
-        return [];
-      }),
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error al obtener alumnos:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  crearAlumno(alumno: Alumno): Observable<{ success: boolean; id?: number; error?: string }> {
-    return this.http.post<{ success: boolean; id?: number; error?: string }>(
-      `${this.API_URL}/practicas/alumnos`,
-      alumno
-    ).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error al crear alumno:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+ 
 }

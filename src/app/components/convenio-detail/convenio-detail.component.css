@@ -1,0 +1,134 @@
+.convenio-container {
+  padding: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.convenio-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.convenio-header h1 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-back:hover {
+  background: var(--bg-tertiary);
+  transform: translateX(-2px);
+}
+
+.empresa-detail {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.empresa-detail {
+  box-shadow: 0 6px 18px -8px rgba(0,0,0,0.25);
+}
+
+.empresa-nombre {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Document-style buttons for annex generation */
+.btn-doc {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.6rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+}
+
+.btn-doc .icon-doc { color: black; }
+
+/* primary filled */
+.btn-doc.btn-primary {
+  background: linear-gradient(135deg, #4753f0 0%, #8b5cf6 100%);
+  color: white;
+  box-shadow: 0 8px 18px -6px rgba(99,102,241,0.35);
+}
+
+.btn-doc.btn-primary:hover { transform: translateY(-3px); }
+
+/* outline / secondary action */
+.btn-doc.btn-outline {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-doc.btn-outline:hover {
+  background: var(--bg-tertiary);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 520px) {
+  .actions { flex-direction: column; }
+  .btn-doc { width: 100%; justify-content: center; }
+}
+
+/* Inline form for Anexo III */
+.anexo-form {
+  margin-top: 1rem;
+  background: linear-gradient(180deg, rgba(99,102,241,0.03), transparent);
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: 0.6rem;
+}
+
+.anexo-form h3 { margin: 0 0 0.5rem 0; color: var(--text-primary); }
+.anexo-form .form-row { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.75rem; }
+.anexo-form label { font-weight: 600; font-size: 0.9rem; }
+.anexo-form input[type="text"], .anexo-form input[type="date"] {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  width: 100%;
+}
+.anexo-form .hint { color: var(--text-secondary); font-size: 0.8rem; }
+.anexo-form .form-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+
+
+.loading { color: var(--text-secondary); padding: 1rem; }
+.empty-state { text-align: center; padding: 2rem; color: var(--text-secondary); }

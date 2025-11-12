@@ -257,6 +257,40 @@
   transform: translateY(-1px);
 }
 
+.btn-convenio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 6px 12px -6px rgba(99, 102, 241, 0.5);
+}
+
+.btn-convenio:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 18px -6px rgba(99, 102, 241, 0.5);
+}
+
+.btn-convenio .icon-handshake {
+  margin-right: 0.5rem;
+  color: white;
+}
+
+.btn-convenio span { line-height: 1; }
+
+@media (prefers-color-scheme: dark) {
+  .btn-convenio {
+    box-shadow: 0 6px 12px -6px rgba(139, 92, 246, 0.25);
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .btn-edit {
     background: rgba(59, 130, 246, 0.1);

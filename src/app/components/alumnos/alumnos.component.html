@@ -1,1 +1,109 @@
-<p>alumnos works!</p>
+<div class="alumnos-container">
+		<div class="header">
+			<div>
+				<h1 class="title">Gestión de Alumnos</h1>
+				<p class="subtitle">Gestión de alumnos del centro</p>
+			</div>
+			<button class="btn-primary" (click)="abrirModal()">
+				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+				</svg>
+				Crear Alumno
+			</button>
+		</div>
+
+	<div class="search-row">
+		<input type="text" [(ngModel)]="filtroTexto" (input)="filtrarAlumnos()" placeholder="Buscar por nombre, apellidos, DNI, localidad..." class="form-control" />
+	</div>
+
+	<div *ngIf="loading" class="loading">Cargando alumnos...</div>
+
+	<div *ngIf="!loading && alumnosFiltrados.length === 0" class="empty">No hay alumnos</div>
+
+		<div *ngIf="!loading && alumnosFiltrados.length > 0" class="alumnos-list">
+			<div *ngFor="let a of alumnosFiltrados" class="alumno-item">
+				<div class="alumno-info">
+					<div class="alumno-main">
+						<h3 class="alumno-nombre">{{ a.nombre }} {{ a.apellidos }}</h3>
+						<span class="alumno-cif">DNI: {{ a.dni_numero || '-' }}</span>
+					</div>
+					<div class="alumno-details">
+						<span class="detail-item">
+							<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+							</svg>
+							{{ a.localidad || '-' }}
+						</span>
+					</div>
+				</div>
+				<div class="alumno-actions">
+					<button class="btn-icon btn-edit" (click)="editarAlumno(a)" title="Editar">
+						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+						</svg>
+					</button>
+					<button class="btn-icon btn-delete" (click)="eliminarAlumno(a)" title="Eliminar">
+						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+						</svg>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal -->
+		<div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+			<div class="modal" (click)="$event.stopPropagation()">
+				<div class="modal-header">
+					<h2>{{ alumnoEditando ? 'Editar Alumno' : 'Nuevo Alumno' }}</h2>
+					<button class="btn-close" (click)="cerrarModal()">
+						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+						</svg>
+					</button>
+				</div>
+
+				<form [formGroup]="alumnoForm" (ngSubmit)="guardarAlumno()" class="modal-body">
+					<h3 class="section-title">Datos personales</h3>
+					<div class="form-grid">
+						<div class="form-group">
+							<label for="nombre">Nombre *</label>
+							<input id="nombre" type="text" formControlName="nombre" placeholder="Nombre" />
+						</div>
+						<div class="form-group">
+							<label for="apellidos">Apellidos *</label>
+							<input id="apellidos" type="text" formControlName="apellidos" placeholder="Apellidos" />
+						</div>
+						<div class="form-group">
+							<label for="dni">DNI</label>
+							<input id="dni" type="text" formControlName="dni_numero" placeholder="12345678A" />
+						</div>
+					</div>
+
+					<h3 class="section-title">Contacto</h3>
+					<div class="form-grid">
+						<div class="form-group">
+							<label for="correo">Email</label>
+							<input id="correo" type="email" formControlName="correo" placeholder="alumno@ejemplo.com" />
+						</div>
+						<div class="form-group">
+							<label for="telefono">Teléfono</label>
+							<input id="telefono" type="tel" formControlName="telefono" placeholder="600123456" />
+						</div>
+						<div class="form-group">
+							<label for="localidad">Localidad</label>
+							<input id="localidad" type="text" formControlName="localidad" placeholder="Localidad" />
+						</div>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+						<button type="submit" class="btn-primary" [disabled]="!alumnoForm.valid || guardando">
+							{{ guardando ? 'Guardando...' : (alumnoEditando ? 'Actualizar Alumno' : 'Guardar Alumno') }}
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+</div>

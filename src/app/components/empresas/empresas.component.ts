@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { ApiService, Empresa } from '../../services/api.service';
@@ -22,7 +23,8 @@ export class EmpresasComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {
     this.empresaForm = this.fb.group({
       nombre_empr: ['', Validators.required],
@@ -39,6 +41,16 @@ export class EmpresasComponent implements OnInit {
       numero_convenio: [''],
       fecha_firma_conv: ['']
     });
+  }
+
+  abrirConvenio(empresa: Empresa) {
+    // Navegar a la ruta de convenios; la ruta es un placeholder y se implementará más adelante
+    if (empresa && empresa.id != null) {
+      this.router.navigate(['/convenio', empresa.id]);
+    } else {
+      // Si por alguna razón no hay id, navegar a lista general de convenios
+      this.router.navigate(['/convenio']);
+    }
   }
 
   ngOnInit() {
