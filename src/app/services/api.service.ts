@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, map, catchError, throwError } from 'rxjs';
 
 export interface CE {
@@ -468,9 +468,10 @@ export class ApiService {
   // ============================================
 
   // ADMIN: usuarios
-  private authHeaders(): Record<string, string> {
+  private authHeaders(): HttpHeaders | undefined {
     const token = localStorage.getItem('access_token');
-    return token ? { Authorization: `Bearer ${token}` } : {} as Record<string, string>;
+    if (!token) return undefined;
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 
   getUsers(limit = 100, offset = 0, q?: string): Observable<any[]> {
