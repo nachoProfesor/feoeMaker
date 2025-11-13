@@ -467,29 +467,89 @@ export class ApiService {
   // USUARIOS
   // ============================================
 
-  getUsers(): Observable<any[]> {
-    return this.http.get<any>(`${this.API_URL}/practicas/users`).pipe(
+  // ADMIN: usuarios
+  private authHeaders(): Record<string, string> {
+    const token = localStorage.getItem('access_token');
+    return token ? { Authorization: `Bearer ${token}` } : {} as Record<string, string>;
+  }
+
+  getUsers(limit = 100, offset = 0, q?: string): Observable<any[]> {
+    const params: any = { limit, offset };
+    if (q) params.q = q;
+    return this.http.get<any>(`${this.API_URL}/admin/users`, { params, headers: this.authHeaders() }).pipe(
       map(response => {
-        if (response.success && response.data) {
-          return response.data;
-        }
-        // Try other common shapes
-        if (response.success && response.users) {
-          return response.users;
-        }
+        if (response.success && response.users) return response.users;
+        if (response.success && response.data) return response.data;
         return [];
       }),
       catchError((error: HttpErrorResponse) => {
-        console.error('Error al obtener usuarios:', error);
+        console.error('Error al obtener usuarios (admin):', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getUserById(userId: number): Observable<any> {
+    return this.http.get<any>(`${this.API_URL}/admin/users/${userId}`, { headers: this.authHeaders() }).pipe(
+      map(response => response.user ?? null),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener usuario por id (admin):', error);
         return throwError(() => error);
       })
     );
   }
 
   updateUser(userId: number, payload: any): Observable<any> {
-    return this.http.put<any>(`${this.API_URL}/practicas/users/${userId}`, payload).pipe(
+    return this.http.put<any>(`${this.API_URL}/admin/users/${userId}`, payload, { headers: this.authHeaders() }).pipe(
       catchError((error: HttpErrorResponse) => {
-        console.error('Error al actualizar usuario:', error);
+        console.error('Error al actualizar usuario (admin):', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deleteUser(userId: number): Observable<any> {
+    return this.http.delete<any>(`${this.API_URL}/admin/users/${userId}`, { headers: this.authHeaders() }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al borrar usuario (admin):', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // ADMIN: logs
+  getLogs(limit = 100, offset = 0, user_id?: number, path?: string, status?: number): Observable<any[]> {
+    const params: any = { limit, offset };
+    if (user_id) params.user_id = user_id;
+    if (path) params.path = path;
+    if (status) params.status = status;
+    return this.http.get<any>(`${this.API_URL}/admin/logs`, { params, headers: this.authHeaders() }).pipe(
+      map(response => {
+        if (response.success && response.logs) return response.logs;
+        if (response.success && response.data) return response.data;
+        return [];
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener logs (admin):', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getLogById(logId: number): Observable<any> {
+    return this.http.get<any>(`${this.API_URL}/admin/logs/${logId}`, { headers: this.authHeaders() }).pipe(
+      map(response => response.log ?? null),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener log por id (admin):', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deleteLog(logId: number): Observable<any> {
+    return this.http.delete<any>(`${this.API_URL}/admin/logs/${logId}`, { headers: this.authHeaders() }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al borrar log (admin):', error);
         return throwError(() => error);
       })
     );

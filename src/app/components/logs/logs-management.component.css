@@ -1,0 +1,4 @@
+.logs-container { max-width: 980px; margin: 20px auto; padding: 18px; background:#fff; border-radius:10px }
+.logs-table { width:100%; border-collapse:collapse }
+.logs-table th, .logs-table td { padding:8px 10px; border-bottom:1px solid #eef2ff }
+.btn-small { padding:6px 10px; border-radius:8px; border:1px solid #e6e9ef; background:#fff }

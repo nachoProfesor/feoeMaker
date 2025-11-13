@@ -11,6 +11,8 @@ import { PfiEditorComponent } from './components/pfi-editor/pfi-editor.component
 import { PfiListComponent } from './components/pfi-list/pfi-list.component';
 import { GeneradorAnexoVIComponent } from './components/generador-anexo-vi/generador-anexo-vi.component';
 import { UsersManagementComponent } from './components/users/users-management.component';
+import { LogsManagementComponent } from './components/logs/logs-management.component';
+import { adminGuard } from './auth/admin.guard';
 import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
@@ -63,7 +65,12 @@ export const routes: Routes = [
   {
     path: 'administracion/usuarios',
     component: UsersManagementComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard, adminGuard]
+  },
+  {
+    path: 'administracion/logs',
+    component: LogsManagementComponent,
+    canActivate: [authGuard, adminGuard]
   },
   // 'formulario' route removed (ConvenioFormComponent deleted)
   { 
