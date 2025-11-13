@@ -76,6 +76,27 @@
       </div>
     </div>
 
+    <!-- Gestionar Usuarios (solo administradores) -->
+    <div class="admin-card" *ngIf="isAdmin">
+      <div class="card-icon users">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="32" height="32">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 11a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </div>
+      <div class="card-content">
+        <h3>Gestionar Usuarios</h3>
+        <p>Crear, editar y asignar roles a los usuarios del sistema</p>
+        <div class="card-actions">
+          <button class="btn-action btn-primary" (click)="irGestionUsuarios()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            Ir a Usuarios
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Más opciones pueden ir aquí -->
 
   </div>

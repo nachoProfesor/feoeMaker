@@ -1,0 +1,21 @@
+.users-container {
+  max-width: 980px;
+  margin: 20px auto;
+  padding: 18px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.06);
+}
+.users-header h2 { margin: 0 0 6px 0; }
+.users-header p { margin: 0 0 12px 0; color: #6b7280 }
+.users-table { width: 100%; border-collapse: collapse; margin-top: 12px }
+.users-table th, .users-table td { padding: 10px 12px; border-bottom: 1px solid #eef2ff; text-align: left }
+.btn-small { padding: 6px 10px; border-radius: 8px; border: 1px solid #e6e9ef; background: #fff; cursor: pointer }
+.modal-overlay { position: fixed; inset: 0; display:flex; align-items:center; justify-content:center; background: rgba(2,6,23,0.35); }
+.modal { background: #fff; padding: 18px; border-radius: 10px; width: 420px; box-shadow: 0 10px 30px rgba(2,6,23,0.12) }
+.form-row { display:flex; gap: 12px; align-items:center; margin-bottom: 10px }
+.form-row label { width: 110px; font-weight:600 }
+.form-row input, .form-row select { flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid #e6e9ef }
+.modal-actions { display:flex; gap: 10px; justify-content: flex-end; margin-top: 12px }
+.btn-primary { background: #6366f1; color: #fff; padding: 8px 12px; border-radius: 8px; border: none }
+.btn-secondary { background: transparent; border: 1px solid #e6e9ef; padding: 8px 12px; border-radius: 8px }

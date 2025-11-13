@@ -463,6 +463,38 @@ export class ApiService {
     );
   }
 
+  // ============================================
+  // USUARIOS
+  // ============================================
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any>(`${this.API_URL}/practicas/users`).pipe(
+      map(response => {
+        if (response.success && response.data) {
+          return response.data;
+        }
+        // Try other common shapes
+        if (response.success && response.users) {
+          return response.users;
+        }
+        return [];
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener usuarios:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updateUser(userId: number, payload: any): Observable<any> {
+    return this.http.put<any>(`${this.API_URL}/practicas/users/${userId}`, payload).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al actualizar usuario:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   // Obtener un PFI específico con sus detalles
   getPFIById(pfiId: number): Observable<any> {
     return this.http.get<any>(`${this.API_URL}/practicas/pfi/${pfiId}`).pipe(

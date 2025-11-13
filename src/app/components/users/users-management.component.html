@@ -1,0 +1,64 @@
+<div class="users-container">
+  <div class="users-header">
+    <h2>Gestión de Usuarios</h2>
+    <p>Lista de usuarios y modificación de roles</p>
+  </div>
+
+  <div *ngIf="loading">Cargando usuarios...</div>
+
+  <table *ngIf="!loading" class="users-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Admin</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of users">
+        <td>{{ u.id }}</td>
+        <td>{{ u.name || u.nombre || u.email }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ (u.role || u.roles || u.rol) }}</td>
+        <td>{{ u.is_admin ? 'Sí' : 'No' }}</td>
+        <td>
+          <button class="btn-small" (click)="openEdit(u)">Editar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Edit modal -->
+  <div class="modal-overlay" *ngIf="editUser" (click)="closeEdit()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Editar usuario</h3>
+      <div class="form-row">
+        <label>Nombre</label>
+        <input [(ngModel)]="editUser.name" />
+      </div>
+      <div class="form-row">
+        <label>Email</label>
+        <input [(ngModel)]="editUser.email" />
+      </div>
+      <div class="form-row">
+        <label>Rol</label>
+        <input [(ngModel)]="editUser.role" placeholder="admin | user | ..." />
+      </div>
+      <div class="form-row">
+        <label>Admin</label>
+        <select [(ngModel)]="editUser.is_admin">
+          <option [ngValue]="true">Sí</option>
+          <option [ngValue]="false">No</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeEdit()">Cancelar</button>
+        <button class="btn-primary" (click)="saveUser()" [disabled]="saving">{{ saving ? 'Guardando...' : 'Guardar' }}</button>
+      </div>
+    </div>
+  </div>
+</div>

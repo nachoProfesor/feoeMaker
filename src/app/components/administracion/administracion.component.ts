@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../auth/auth.service';
 
 interface CicloFormativo {
   id: number;
@@ -38,6 +39,7 @@ interface Titulo {
   styleUrl: './administracion.component.css'
 })
 export class AdministracionComponent implements OnInit {
+  isAdmin = false;
   mostrarModalCiclo = false;
   mostrarModalCrearCiclo = false;
   mostrarModalGestionarCiclos = false;
@@ -64,11 +66,16 @@ export class AdministracionComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private auth: AuthService
   ) {}
 
   ngOnInit() {
     this.cargarCiclos();
+    // Suscribirse al usuario para determinar permisos
+    this.auth.currentUser.subscribe(u => {
+      this.isAdmin = !!(u?.is_admin || (typeof u?.role === 'string' && u.role === 'admin') || (Array.isArray(u?.role) && u.role.includes('admin')));
+    });
   }
 
   cargarCiclos() {
@@ -125,6 +132,10 @@ export class AdministracionComponent implements OnInit {
   seleccionarCiclo(ciclo: CicloFormativo) {
     console.log('Ciclo seleccionado:', ciclo);
     this.router.navigate(['/administracion/pfi', ciclo.id]);
+  }
+
+  irGestionUsuarios() {
+    this.router.navigate(['/administracion/usuarios']);
   }
 
   abrirModalCrearCiclo() {

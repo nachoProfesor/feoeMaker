@@ -8,6 +8,9 @@ export interface User {
   email: string;
   name: string;
   picture?: string;
+  // role can be a string like 'admin' or an array of roles
+  role?: string | string[];
+  is_admin?: boolean;
 }
 
 @Injectable({
@@ -67,7 +70,12 @@ export class AuthService {
             id: String(u.id ?? u.google_sub ?? ''),
             email: u.email ?? '',
             name: u.name ?? u.email ?? '',
-            picture: u.picture ?? ''
+            picture: u.picture ?? '',
+            role: u.role ?? u.roles ?? u.rol,
+            is_admin: (u.is_admin ?? (
+              (typeof (u.role) === 'string' && u.role === 'admin') ||
+              (Array.isArray(u.role) && (u.role as any[]).includes('admin'))
+            )) as boolean
           };
           return user;
         }
