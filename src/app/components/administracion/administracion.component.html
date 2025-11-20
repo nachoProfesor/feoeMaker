@@ -5,7 +5,6 @@
       <p class="subtitle">Configuración y gestión del sistema</p>
     </div>
   </div>
-
   <!-- Cards de opciones -->
   <div class="admin-grid">
     
@@ -92,6 +91,30 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
             Ir a Usuarios
+          </button>
+          <button class="btn-action btn-secondary" (click)="probarGetUsersAdmin()" title="Probar GET /admin/users">
+            Probar usuarios
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ver Logs (solo administradores) -->
+    <div class="admin-card" *ngIf="isAdmin">
+      <div class="card-icon logs">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="32" height="32">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18" />
+        </svg>
+      </div>
+      <div class="card-content">
+        <h3>Ver Logs</h3>
+        <p>Visualizar registros de actividad y auditoría del sistema</p>
+        <div class="card-actions">
+          <button class="btn-action btn-primary" (click)="irGestionLogs()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            Ir a Logs
           </button>
         </div>
       </div>

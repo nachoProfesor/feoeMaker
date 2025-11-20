@@ -138,6 +138,25 @@ export class AdministracionComponent implements OnInit {
     this.router.navigate(['/administracion/usuarios']);
   }
 
+  irGestionLogs() {
+    this.router.navigate(['/administracion/logs']);
+  }
+
+  probarGetUsersAdmin() {
+    console.log('Probar GET /admin/users (debug)');
+    this.apiService.getUsers().subscribe({
+      next: (users: any) => {
+        console.log('Respuesta /admin/users (OK):', users);
+        alert('OK: ' + (Array.isArray(users) ? users.length + ' usuario(s) cargados (ver consola)' : JSON.stringify(users)));
+      },
+      error: (err: any) => {
+        console.error('Respuesta /admin/users (ERROR):', err);
+        const msg = err?.error?.message || err?.message || JSON.stringify(err);
+        alert('Error al obtener usuarios (ver consola):\n' + msg);
+      }
+    });
+  }
+
   abrirModalCrearCiclo() {
     this.mostrarModalCrearCiclo = true;
     this.cerrarModalCiclo();
