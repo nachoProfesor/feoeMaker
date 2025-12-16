@@ -21,6 +21,17 @@ export class AppComponent {
     this.authService.currentUser.subscribe(user => {
       this.currentUser = user;
     });
+    // If developer bypass flag is set and there's no current user, seed a dev admin user
+    try {
+      const bypass = localStorage.getItem('BYPASS_AUTH');
+      if (bypass === '1' && !this.currentUser) {
+        const devUser: any = { id: '0', email: 'dev@local', name: 'Dev User', role: 'admin', is_admin: true };
+        try { this.authService.saveUser(devUser); } catch (e) { /* ignore */ }
+        this.currentUser = devUser;
+      }
+    } catch (e) {
+      // ignore localStorage errors
+    }
   }
 
   logout() {
