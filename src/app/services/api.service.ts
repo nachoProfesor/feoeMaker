@@ -129,7 +129,7 @@ export interface PFIConDetalles {
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly API_URL = 'https://scraping-curriculos-1.onrender.com/api';
+  private readonly API_URL = 'http://localhost:5000/api';
 
   constructor(private http: HttpClient) { }
 

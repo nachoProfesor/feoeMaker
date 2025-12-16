@@ -29,7 +29,9 @@ export class AuthService {
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  private saveUser(user: User) {
+  // Public helper used for debugging / bypass workflows.
+  // In normal flows use handleGoogleIdToken -> tap(user => this.saveUser(user))
+  public saveUser(user: User) {
     localStorage.setItem('currentUser', JSON.stringify(user));
     this.currentUserSubject.next(user);
   }
