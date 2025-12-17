@@ -1,6 +1,7 @@
 <div class="app-layout">
   <!-- Sidebar -->
-  <aside class="sidebar" *ngIf="currentUser">
+  <!-- <aside class="sidebar" *ngIf="showSidebar"> -->
+  <aside class="sidebar"> 
     <div class="sidebar-header">
       <h1 class="logo">Feoe Manager</h1>
     </div>
@@ -47,12 +48,12 @@
 
     <div class="sidebar-footer">
       <div class="user-profile">
-        <img [src]="currentUser.picture || 'https://via.placeholder.com/40'" 
+        <img [src]="currentUser?.picture || 'https://via.placeholder.com/40'" 
              alt="Avatar" 
              class="user-avatar-small">
         <div class="user-info-small">
-          <div class="user-name-small">{{ currentUser.name }}</div>
-          <div class="user-email-small">{{ currentUser.email }}</div>
+          <div class="user-name-small">{{ currentUser?.name }}</div>
+          <div class="user-email-small">{{ currentUser?.email }}</div>
         </div>
       </div>
       <button class="logout-btn" (click)="logout()">
@@ -66,7 +67,7 @@
   <!-- Main content -->
   <div class="main-wrapper">
     <!-- Top bar -->
-    <header class="topbar" *ngIf="currentUser">
+    <header class="topbar" *ngIf="showSidebar">
       <div class="topbar-left">
         <h2 class="page-title">Generador de Anexos</h2>
       </div>

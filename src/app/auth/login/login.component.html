@@ -6,8 +6,13 @@
     </div>
 
     <div class="login-body">
-      <!-- Google Sign-In button will be rendered here by Google Identity Services -->
-      <div id="g_id_signin"></div>
+      <!-- Google Sign-In placeholder (hidden when GSI disabled) -->
+      <div *ngIf="useGoogle" id="g_id_signin"></div>
+
+      <!-- Development sign-in shortcut when Google is disabled -->
+      <div *ngIf="!useGoogle" class="dev-login">
+        <button class="btn btn-primary" (click)="devLogin()">Entrar como desarrollador</button>
+      </div>
 
       <!-- Loading overlay shown while authenticating -->
       <div class="loading-overlay" *ngIf="loading">

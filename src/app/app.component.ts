@@ -13,6 +13,15 @@ import { AuthService, User } from './auth/auth.service';
 export class AppComponent {
   title = 'Feoe Manager';
   currentUser: User | null = null;
+  // Expose a helper so template can show sidebar when BYPASS_AUTH is set
+  get showSidebar(): boolean {
+    try {
+      const bypass = typeof window !== 'undefined' ? localStorage.getItem('BYPASS_AUTH') : null;
+      return !!this.currentUser || bypass === '1';
+    } catch (e) {
+      return !!this.currentUser;
+    }
+  }
 
   constructor(
     public authService: AuthService,

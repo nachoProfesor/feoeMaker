@@ -16,6 +16,8 @@ declare global {
 export class LoginComponent implements AfterViewInit, OnDestroy {
   private clientId = '516221880647-jnaelj0glcuqs5uc8b5q819p84ik0rr7.apps.googleusercontent.com';
   loading = false;
+  // Disable Google Identity initialization by default. Set to `true` to re-enable.
+  useGoogle = false;
 
   constructor(
     private authService: AuthService,
@@ -23,6 +25,11 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   ) {}
 
   ngAfterViewInit(): void {
+    // Google initialization is optional and disabled by default.
+    if (!this.useGoogle) {
+      return;
+    }
+
     // Initialize Google Identity Services button
     try {
       const google = (window as any).google;
@@ -76,5 +83,18 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
         this.loading = false;
       }
     });
+  }
+
+  // Development helper: seed a dev user and navigate to the app.
+  devLogin() {
+    try {
+      localStorage.setItem('BYPASS_AUTH', '1');
+      const u = { id: '0', email: 'dev@local', name: 'Dev User', is_admin: true };
+      localStorage.setItem('currentUser', JSON.stringify(u));
+      localStorage.setItem('access_token', 'dev-token');
+      this.router.navigate(['/inicio']);
+    } catch (e) {
+      console.error('Error setting dev login:', e);
+    }
   }
 }

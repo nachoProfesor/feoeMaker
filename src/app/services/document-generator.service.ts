@@ -106,4 +106,119 @@ export class DocumentGeneratorService {
       throw e;
     }
   }
+
+  async generateAnexoVI(formData: any) {
+    try {
+      // Try several possible filenames (some have different casing/naming in assets)
+      const candidates = [
+        'assets/anexovitemplate.docx',
+        'assets/AnexoVITemplate.docx',
+        'assets/ANEXOVITemplate.docx',
+        'assets/ANEXOVITemplate.docx',
+        'assets/AnexoVItemplate.docx',
+        'assets/ANEXO X.docx',
+        'assets/ANEXO X.docx'
+      ];
+
+      let arrayBuffer: ArrayBuffer | null = null;
+      let usedPath = '';
+      let lastRespInfo: string | null = null;
+
+      for (const p of candidates) {
+        try {
+          const resp = await fetch(p);
+          if (!resp.ok) {
+            lastRespInfo = `${p} returned status ${resp.status}`;
+            continue;
+          }
+          const ab = await resp.arrayBuffer();
+          if (!ab) {
+            lastRespInfo = `${p} returned empty body`;
+            continue;
+          }
+          const bufCheck = new Uint8Array(ab);
+          // Check ZIP header 50 4B 03 04
+          if (bufCheck.length >= 4 && bufCheck[0] === 0x50 && bufCheck[1] === 0x4B && bufCheck[2] === 0x03 && bufCheck[3] === 0x04) {
+            arrayBuffer = ab;
+            usedPath = p;
+            break;
+          } else {
+            // capture text preview if possible to show helpful error
+            try {
+              const text = await resp.text();
+              lastRespInfo = `${p} returned non-docx content (preview: ${text.slice(0,200)})`;
+            } catch (e) {
+              lastRespInfo = `${p} returned non-docx binary content`;
+            }
+            continue;
+          }
+        } catch (e) {
+          lastRespInfo = `fetch(${p}) failed: ${String(e)}`;
+          continue;
+        }
+      }
+
+      if (!arrayBuffer) {
+        throw new Error(`No se encontró una plantilla DOCX válida para Anexo VI. Intentados: ${candidates.join(', ')}. Última info: ${lastRespInfo}`);
+      }
+
+      const buf = new Uint8Array(arrayBuffer);
+      const zip = new PizZip(buf);
+      const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+
+      const now = new Date();
+      const mesNombre = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(now);
+
+      // Helpers to safely extract values
+      const ciclo = formData?.ciclo || {};
+      const alumno = formData?.alumno || {};
+      const empresa = formData?.empresa || {};
+
+      const requiereMedidas = typeof formData?.requiere_medidas === 'boolean'
+        ? (formData.requiere_medidas ? 'Sí' : 'No')
+        : (formData.requiere_medidas ?? formData.requiereMedidas ?? 'No');
+
+      const requiereAutorizacion = typeof formData?.requiere_autorizacion === 'boolean'
+        ? (formData.requiere_autorizacion ? 'Sí' : 'No')
+        : (formData.requiere_autorizacion ?? formData.requiereAutorizacion ?? 'No');
+
+      doc.render({
+        NOMBRE_CICLO: ciclo?.nombre || formData?.ciclo_nombre || '',
+        CODIGO_CICLO: ciclo?.codigo || ciclo?.codigo_ciclo || formData?.ciclo_codigo || '',
+        APELLIDOS_ALUMNO: alumno?.apellidos || '',
+        NOMBRE_ALUMNO: alumno?.nombre || '',
+        CORREO_ALUMNO: alumno?.correo || alumno?.email || '',
+        NOMBRE_TUTOR: formData?.nombre_tutor || formData?.tutor_nombre || '',
+        CORREO_TUTOR: formData?.correo_tutor || formData?.tutor_correo || '',
+        REQUIERE_MEDIDAS: requiereMedidas,
+        REQUIERE_AUTORIZACION: requiereAutorizacion,
+        NOMBRE_EMPRESA: empresa?.nombre_empr || empresa?.nombre || '',
+        DIA: now.getDate().toString(),
+        MES: mesNombre,
+        ANO: now.getFullYear().toString(),
+        // Optional scheduling fields
+        CALENDARIO: (() => {
+          const c = formData?.calendario || formData?.fecha_calendario || null;
+          if (!c) return '';
+          try {
+            const d = new Date(c);
+            return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+          } catch (e) { return String(c); }
+        })(),
+        MODALIDAD: formData?.modalidad || formData?.tipo || '',
+        NUMERO_HORAS: (formData?.numero_horas ?? formData?.numeroHoras ?? '')
+      });
+
+      const out = doc.getZip().generate({
+        type: 'blob',
+        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      });
+
+      const nombreArchivo = `AnexoVI_${(alumno?.apellidos || 'alumno').replace(/\s+/g, '_')}_${(empresa?.nombre_empr || empresa?.nombre || 'empresa').replace(/\s+/g, '_')}.docx`;
+      saveAs(out, nombreArchivo);
+    } catch (e) {
+      console.error('Error generating Anexo VI document:', e);
+      throw e;
+    }
+  }
 }

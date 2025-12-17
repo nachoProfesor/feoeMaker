@@ -24,58 +24,58 @@ export const routes: Routes = [
   { 
     path: 'administracion', 
     component: AdministracionComponent,
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   { 
     path: 'administracion/pfi/:cicloId', 
     component: PfiListComponent,
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   { 
     path: 'administracion/pfi/nuevo/:cicloId', 
     component: PfiEditorComponent,
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   { 
     path: 'administracion/pfi/editar/:pfiId', 
     component: PfiEditorComponent,
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   { 
     path: 'alumnos', 
     component: AlumnosComponent,
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   { 
     path: 'empresas', 
     component: EmpresasComponent,
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   { 
     path: 'propuestas', 
     component: PropuestasComponent,
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   {
     path: 'generador-anexo-vi',
     component: GeneradorAnexoVIComponent,
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   {
     path: 'administracion/usuarios',
     component: UsersManagementComponent,
-    canActivate: [authGuard, adminGuard]
+    // canActivate: [authGuard, adminGuard]
   },
   {
     path: 'administracion/logs',
     component: LogsManagementComponent,
-    canActivate: [authGuard, adminGuard]
+    // canActivate: [authGuard, adminGuard]
   },
   // 'formulario' route removed (ConvenioFormComponent deleted)
   { 
     path: 'convenio/:id',
     component: ConvenioDetailComponent,
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   { 
     path: '', 

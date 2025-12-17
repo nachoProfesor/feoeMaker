@@ -39,6 +39,52 @@
       </select>
     </div>
 
+    <div class="form-row">
+      <label>¿Requiere medidas?</label>
+      <select [(ngModel)]="requiereMedidas">
+        <option [ngValue]="null">-- Selecciona --</option>
+        <option [ngValue]="'Sí'">Sí</option>
+        <option [ngValue]="'No'">No</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>¿Requiere autorización?</label>
+      <select [(ngModel)]="requiereAutorizacion">
+        <!-- <option [ngValue]="null">-- Selecciona --</option> -->
+        <option [ngValue]="'Sí'" >Sí</option>
+        <option [ngValue]="'No'" [defaultSelected]="requiereAutorizacion === 'No'">No</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Nombre tutor</label>
+      <input type="text" [(ngModel)]="nombreTutor" placeholder="Nombre del tutor responsable" />
+    </div>
+
+    <div class="form-row">
+      <label>Correo tutor</label>
+      <input type="email" [(ngModel)]="correoTutor" placeholder="correo@dominio.es" />
+    </div>
+
+    <div class="form-row">
+      <label>Calendario</label>
+      <input type="date" [(ngModel)]="calendario" />
+    </div>
+
+    <div class="form-row">
+      <label>Modalidad</label>
+      <select [(ngModel)]="modalidad">
+        <option [ngValue]="'General'">General</option>
+        <option [ngValue]="'Intensivo'">Intensivo</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Número de horas</label>
+      <input type="number" [(ngModel)]="numeroHoras" min="0" />
+    </div>
+
     <div class="generador-actions">
       <button class="btn-primary" (click)="generar()" [disabled]="!canGenerate()">Generar Anexo VI</button>
       <button class="btn-secondary" (click)="volver()">Volver</button>

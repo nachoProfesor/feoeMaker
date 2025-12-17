@@ -18,10 +18,22 @@ export class GeneradorAnexoVIComponent implements OnInit {
   ciclos: any[] = [];
   pfis: any[] = [];
 
+  // Tutor fields requested for the document
+  nombreTutor: string | null = null;
+  correoTutor: string | null = null;
+  // New scheduling fields
+  calendario: string | null = null; // ISO date string from date input
+  modalidad: 'General' | 'Intensivo' = 'General';
+  numeroHoras: number | null = null;
+
   selectedAlumnoId: number | null = null;
   selectedEmpresaId: number | null = null;
   selectedCicloId: number | null = null;
   selectedPfiId: number | null = null;
+  // New fields requested by the user: Sí / No
+  // Default both to 'No' so the option appears selected by default
+  requiereMedidas: 'Sí' | 'No' | null = 'No';
+  requiereAutorizacion: 'Sí' | 'No' | null = 'No';
 
   cargando = false;
 
@@ -80,7 +92,9 @@ export class GeneradorAnexoVIComponent implements OnInit {
   }
 
   canGenerate(): boolean {
-    return !!(this.selectedAlumnoId && this.selectedEmpresaId && this.selectedCicloId && this.selectedPfiId);
+    // Require selection of alumno/empresa/ciclo/pfi and the two Sí/No fields.
+    // New fields (calendario/modalidad/numeroHoras) are optional for generation.
+    return !!(this.selectedAlumnoId && this.selectedEmpresaId && this.selectedCicloId && this.selectedPfiId && this.requiereMedidas !== null && this.requiereAutorizacion !== null);
   }
 
   generar(): void {
@@ -94,18 +108,42 @@ export class GeneradorAnexoVIComponent implements OnInit {
     const empresa = this.empresas.find(e => e.id === this.selectedEmpresaId);
     const pfi = this.pfis.find(p => p.id === this.selectedPfiId);
 
+    const ciclo = this.ciclos.find(c => c.id === this.selectedCicloId) || null;
     const formData = {
       alumno,
       empresa,
       pfi,
-      fecha: new Date().toISOString()
+      ciclo,
+      fecha: new Date().toISOString(),
+      // Keep Sí/No strings and boolean representation for compatibility
+      requiere_medidas: this.requiereMedidas === 'Sí',
+      requiere_autorizacion: this.requiereAutorizacion === 'Sí',
+      requiereMedidas: this.requiereMedidas,
+      requiereAutorizacion: this.requiereAutorizacion,
+      nombre_tutor: this.nombreTutor,
+      correo_tutor: this.correoTutor,
+      calendario: this.calendario,
+      modalidad: this.modalidad,
+      numero_horas: this.numeroHoras
     };
+    // Ensure scheduling fields are always present (empty when not provided)
+    formData.calendario = this.calendario ?? '';
+    formData.modalidad = this.modalidad ?? '';
+    formData.numero_horas = (this.numeroHoras !== null && this.numeroHoras !== undefined) ? this.numeroHoras : 0;
 
-    // Placeholder: por ahora solo mostramos en consola y llamamos al generador si quieres.
-    console.log('Generando Anexo VI con:', formData);
-    alert('Generando Anexo VI (placeholder) - revisa consola');
+    // Debugging: print formData so we can inspect what's being sent to the generator
+    // (Useful when troubleshooting missing keys in the template)
+    console.log('Anexo VI - formData:', formData);
 
-    // Si tienes plantilla, podrías llamar a docGen.generateConvenio(formData) o un método específico.
-    // this.docGen.generateConvenio(formData).catch(err => console.error(err));
+    // Llamar al generador de Anexo VI
+    this.cargando = true;
+    this.docGen.generateAnexoVI(formData).then(() => {
+      this.cargando = false;
+      console.log('Anexo VI generado correctamente');
+    }).catch(err => {
+      this.cargando = false;
+      console.error('Error generando Anexo VI:', err);
+      alert('Error generando Anexo VI. Revisa la consola.');
+    });
   }
 }
